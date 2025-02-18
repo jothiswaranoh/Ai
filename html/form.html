@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galileo Design</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Manrope%3Awght%40400%3B500%3B700%3B800&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900"
+    />
+    <link rel="icon" href="data:image/x-icon;base64," type="image/x-icon" />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+
+  <body
+    class="bg-[#111418] text-white"
+    style="font-family: Manrope, 'Noto Sans', sans-serif"
+  >
+    <div class="flex flex-col min-h-screen">
+      <!-- Header -->
+      <header
+        class="flex items-center justify-between border-b border-[#293038] px-10 py-3"
+      >
+        <div class="flex items-center gap-4">
+          <div class="size-4">
+            <svg
+              viewBox="0 0 48 48"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M24 45.8096C19.6865 45.8096 15.4698 44.5305 11.8832 42.134C8.29667 39.7376 5.50128 36.3314 3.85056 32.3462C2.19985 28.361 1.76794 23.9758 2.60947 19.7452C3.451 15.5145 5.52816 11.6284 8.57829 8.5783C11.6284 5.52817 15.5145 3.45101 19.7452 2.60948C23.9758 1.76795 28.361 2.19986 32.3462 3.85057C36.3314 5.50129 39.7376 8.29668 42.134 11.8833C44.5305 15.4698 45.8096 19.6865 45.8096 24L24 24L24 45.8096Z"
+                fill="currentColor"
+              ></path>
+            </svg>
+          </div>
+          <h2 class="text-lg font-bold tracking-[-0.015em]">Resume Maker</h2>
+        </div>
+
+        <div class="flex justify-end gap-8">
+          <div class="flex items-center gap-9">
+            <a href="#" class="text-sm font-medium">Jobs</a>
+            <a href="#" class="text-sm font-medium">Get Hired</a>
+            <a href="#" class="text-sm font-medium">Career</a>
+            <a href="#" class="text-sm font-medium">Resources</a>
+          </div>
+          <div class="flex gap-2">
+            <button
+              class="bg-[#1980e6] rounded-xl text-sm font-bold px-4 py-2 h-10 text-white flex items-center justify-center"
+            >
+              Log in
+            </button>
+            <button
+              class="bg-[#293038] rounded-xl text-sm font-bold px-4 py-2 h-10 text-white flex items-center justify-center"
+            >
+              Sign up
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-grow px-6 py-5 flex justify-center">
+        <section class="flex w-full max-w-4xl">
+          <div class="w-80">
+            <!-- Sidebar -->
+            <nav class="flex flex-col gap-4">
+              <div class="bg-[#293038] p-2 rounded-xl">
+                <p class="text-sm font-medium">Personal Details</p>
+              </div>
+              <div class="p-2"><p class="text-sm font-medium">Skills</p></div>
+              <div class="p-2">
+                <p class="text-sm font-medium">Education</p>
+              </div>
+              <div class="p-2"><p class="text-sm font-medium">Projects</p></div>
+              <div class="p-2">
+                <p class="text-sm font-medium">Work Experience</p>
+              </div>
+              <div class="p-2">
+                <p class="text-sm font-medium">Languages</p>
+              </div>
+              <div class="p-2">
+                <p class="text-sm font-medium">References</p>
+              </div>
+            </nav>
+          </div>
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="flex flex-wrap justify-between gap-3 p-4"><p class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72">Personal Details</p></div>
+            <div class="flex flex-col p-4">
+              <div class="flex flex-col items-center gap-6 rounded-xl border-2 border-dashed border-[#3c4753] px-6 py-14">
+                <p class="text-white text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">Drag and drop your resume here</p>
+                <button
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#293038] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                >
+                  <span class="truncate">Browse</span>
+                </button>
+              </div>
+            </div>
+          <div class="flex-1 p-4 max-w-4xl">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold">Personal Details</h3>
+            </div>
+
+            <!-- Form Fields -->
+            <form class="space-y-4">
+              <div class="flex space-x-4">
+                <div class="flex flex-col w-full">
+                  <label for="first-name" class="text-sm font-medium pb-2"
+                    >First Name</label
+                  >
+                  <input
+                    type="text"
+                    id="first-name"
+                    class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3"
+                    placeholder="Your first name"
+                  />
+                </div>
+                <div class="flex flex-col w-full">
+                  <label for="last-name" class="text-sm font-medium pb-2"
+                    >Last Name</label
+                  >
+                  <input
+                    type="text"
+                    id="last-name"
+                    class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3"
+                    placeholder="Your last name"
+                  />
+                </div>
+              </div>
+
+              <div class="flex space-x-4">
+                <div class="flex flex-col w-full">
+                  <label for="headline" class="text-sm font-medium pb-2"
+                    >Headline</label
+                  >
+                  <input
+                    type="text"
+                    id="headline"
+                    class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3"
+                    placeholder="e.g. Product Designer"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-col">
+                <label for="summary" class="text-sm font-medium pb-2"
+                  >Summary</label
+                >
+                <textarea
+                  id="summary"
+                  class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3 min-h-[150px]"
+                  placeholder="Write a short summary about yourself"
+                ></textarea>
+              </div>
+
+              <div class="flex space-x-4">
+                <div class="flex flex-col w-full">
+                  <label for="country" class="text-sm font-medium pb-2"
+                    >Country/Region</label
+                  >
+                  <input
+                    type="text"
+                    id="country"
+                    class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3"
+                    placeholder="Choose your country/region"
+                  />
+                </div>
+                <div class="flex flex-col w-full">
+                  <label for="city" class="text-sm font-medium pb-2"
+                    >City</label
+                  >
+                  <input
+                    type="text"
+                    id="city"
+                    class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3"
+                    placeholder="e.g. San Francisco"
+                  />
+                </div>
+              </div>
+
+              <div class="flex space-x-4">
+                <div class="flex flex-col w-full">
+                  <label for="postal-code" class="text-sm font-medium pb-2"
+                    >Postal Code</label
+                  >
+                  <input
+                    type="text"
+                    id="postal-code"
+                    class="form-input bg-[#1c2126] text-white rounded-xl border-[#3c4753] placeholder-[#9dabb8] w-full p-3"
+                    placeholder="Your postal code"
+                  />
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="flex justify-center">
+                <button
+                  type="submit"
+                  class="bg-[#1980e6] text-white rounded-xl px-6 py-3 mt-4 text-sm font-bold"
+                >
+                  Next
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
