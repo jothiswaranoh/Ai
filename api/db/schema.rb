@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_10_172719) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_18_152929) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -101,12 +101,29 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_10_172719) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "skills", force: :cascade do |t|
     t.bigint "resume_id", null: false
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["resume_id"], name: "index_skills_on_resume_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
   create_table "work_experiences", force: :cascade do |t|
@@ -127,6 +144,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_10_172719) do
   add_foreign_key "languages", "resumes"
   add_foreign_key "projects", "resumes"
   add_foreign_key "resume_files", "resumes"
+  add_foreign_key "sessions", "users"
   add_foreign_key "skills", "resumes"
   add_foreign_key "work_experiences", "resumes"
 end

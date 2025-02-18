@@ -1,8 +1,7 @@
 source 'https://rubygems.org'
 
 ruby '3.2.2'
-
-gem 'rails', '~> 7.1.4', '>= 7.1.4.1'
+gem 'rails', '~> 8.0'
 
 gem 'pg'
 gem 'pry'
@@ -17,7 +16,7 @@ gem 'pdf-reader'
 gem 'rack-cors'
 
 gem 'docx'
-
+gem "bcrypt", "~> 3.1.7"
 gem 'httparty'
 
 group :development, :test do
