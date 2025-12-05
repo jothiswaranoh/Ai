@@ -5,10 +5,12 @@ from app.services.user_service import (
     create_user, get_user_by_id, get_all_users,
     update_user, delete_user, get_user_by_email
 )
+
 from app.dependencies import (
     get_current_active_user,
     admin_required
 )
+
 from app.security.hash import hash_password
 from bson import ObjectId
 
@@ -67,6 +69,8 @@ async def list_users(
     
     return users
 
+
+
 @router.get("/{user_id}", response_model=dict)
 async def get_user(
     user_id: str,
@@ -87,6 +91,7 @@ async def get_user(
     
     user["id"] = str(user.pop("_id"))
     return user
+
 
 @router.put("/{user_id}", response_model=dict)
 async def update_user_endpoint(
