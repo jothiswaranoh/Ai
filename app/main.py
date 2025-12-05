@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.auth_router import router as auth_router
 from app.routers.users_router import router as users_router
+from app.routers.billing_router import router as billing_router
 
 app = FastAPI(title="Drone API", version="1.0.0")
 
@@ -21,3 +22,4 @@ def home():
 # Include route modules
 app.include_router(auth_router)
 app.include_router(users_router)
+app.include_router(billing_router)
