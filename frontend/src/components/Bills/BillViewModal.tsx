@@ -9,7 +9,8 @@ interface BillViewModalProps {
 }
 
 export function BillViewModal({ bill, onClose, onEdit }: BillViewModalProps) {
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string | null) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -75,21 +76,26 @@ export function BillViewModal({ bill, onClose, onEdit }: BillViewModalProps) {
               </label>
             </div>
             <p className="text-sm font-mono font-bold text-white truncate">
-              {bill.id}
+              {bill._id || (bill as any).id}
             </p>
           </div>
 
           {/* Farmer Information Card */}
           <div className="bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-white/10 hover:border-blue-400/30 transition-all duration-200">
-            <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 mb-2">
               <User className="w-5 h-5 text-blue-400" />
               <label className="text-sm font-semibold text-blue-200 uppercase tracking-wider">
-                Farmer ID
+                Farmer Name
               </label>
             </div>
-            <p className="text-lg font-semibold text-white">
-              {bill.farmer_id}
+            <p className="text-xl font-bold text-white">
+              {bill.farmer_name || bill.farmer_id}
             </p>
+            {bill.farmer_number && (
+              <p className="text-sm text-cyan-200 mt-1">
+                📞 {bill.farmer_number}
+              </p>
+            )}
           </div>
 
           {/* Details Grid */}
@@ -152,7 +158,7 @@ export function BillViewModal({ bill, onClose, onEdit }: BillViewModalProps) {
                   </label>
                 </div>
                 <p className="text-sm font-semibold text-white">
-                  {bill.operator_id}
+                  {bill.operator_name || bill.operator_id}
                 </p>
               </div>
 

@@ -164,7 +164,7 @@ export function BillEditModal({ bill, onClose, onSuccess }: BillEditModalProps) 
                     className="font-semibold"
                     style={{ color: theme.colors.neutral.white }}
                   >
-                    {bill.farmer_id}
+                    {bill.farmer_name || bill.farmer_id}
                   </p>
                 </div>
                 <div>

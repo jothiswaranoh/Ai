@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Plane, Lock, Mail, Eye, EyeOff } from 'lucide-react';
@@ -13,10 +13,15 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  if (user) {
-    navigate('/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -25,9 +30,9 @@ export function Login() {
 
     const result = await login(email, password);
     if (result.success) {
-      if (user?.role === 'admin') {
+      if (result.user?.role === 'admin') {
         navigate('/admin');
-      } else if (user?.role === 'operator') {
+      } else if (result.user?.role === 'operator') {
         navigate('/operator');
       } else {
         navigate('/dashboard'); // fallback

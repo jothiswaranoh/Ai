@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { User } from '../../lib/mockData';
 import { usersApi } from '../../lib/api';
 import { Filter, User as UserIcon, Calendar, Search } from 'lucide-react';
@@ -26,13 +26,7 @@ export function BillFilters({ onFilterChange }: BillFiltersProps) {
     loadOperators();
   }, []);
 
-  // Use useCallback to memoize filter updates
-  const handleFilterChange = useCallback((newFilters: typeof filters) => {
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  }, [onFilterChange]);
-
-  // Or alternatively, separate the filter state update from the callback
+  // Separate the filter state update from the callback
   useEffect(() => {
     // Debounce or throttle the filter changes if needed
     const timer = setTimeout(() => {
@@ -163,7 +157,6 @@ export function BillFilters({ onFilterChange }: BillFiltersProps) {
             className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all backdrop-blur-sm text-sm"
             style={{
               ...inputStyle,
-              focusRing: `0 0 0 2px ${theme.colors.primary.cyan[400]}`
             }}
           >
             <option value="" className="bg-slate-800 text-white">All Operators</option>

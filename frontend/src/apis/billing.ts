@@ -2,8 +2,11 @@ import { client } from './client';
 
 export interface BillingResponse {
     _id: string;
-    farmer_id: string; // Storing farmer name here for now since we don't have a farmers collection
+    farmer_id: string;
+    farmer_name?: string;
+    farmer_number?: string;
     operator_id: string;
+    operator_name?: string;
     drone_id: string;
     acres: number;
     time: number;

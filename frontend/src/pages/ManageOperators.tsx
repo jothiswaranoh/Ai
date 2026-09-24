@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserPlus, Trash2, AlertCircle } from 'lucide-react';
 import { Navbar } from '../components/Layout/Navbar';
-import { Card } from '../components/UI/Card';
 import { Button } from '../components/UI/Button';
 import { Input } from '../components/UI/Input';
 import { MOCK_PASSWORD } from '../lib/mockData';

@@ -5,7 +5,7 @@ import { authApi } from '../apis/auth';
 type AuthContextType = {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; user?: User; error?: string }>;
   logout: () => void;
   isAdmin: boolean;
   isOperator: boolean;

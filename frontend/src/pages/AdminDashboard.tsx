@@ -1,14 +1,62 @@
 import { useState, useEffect, useMemo } from 'react';
-import { FileText, DollarSign, TrendingUp, Calendar, AlertCircle, Download, RefreshCw, Search, Filter } from 'lucide-react';
-import { Navbar } from '../components/Layout/Navbar';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  FileText,
+  DollarSign,
+  TrendingUp,
+  Calendar,
+  AlertCircle,
+  Download,
+  RefreshCw,
+  Search,
+  Filter,
+  Plus,
+  UserCheck,
+  Users
+} from 'lucide-react';
+import { Sidebar, AdminTab } from '../components/Layout/Sidebar';
 import { BillTable } from '../components/Bills/BillTable';
 import { BillFilters } from '../components/Bills/BillFilters';
 import { BillEditModal } from '../components/Bills/BillEditModal';
 import { BillViewModal } from '../components/Bills/BillViewModal';
+import { BillForm } from '../components/Bills/BillForm';
+import { FarmersList } from '../components/Farmers/FarmersList';
+import { UserManagement } from '../components/Users/UserManagement';
 import { BillingResponse, billsApi } from '../apis/billing';
 import { theme } from '../theme';
 
 export function AdminDashboard() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine active tab based on current URL path
+  const activeTab: AdminTab = useMemo(() => {
+    const path = location.pathname.toLowerCase();
+    if (path.startsWith('/farmers')) return 'farmers';
+    if (path.startsWith('/users') || path.startsWith('/operators')) return 'users';
+    if (path.startsWith('/bills')) return 'bills';
+    return 'dashboard';
+  }, [location.pathname]);
+
+  const handleTabChange = (tab: AdminTab) => {
+    switch (tab) {
+      case 'farmers':
+        navigate('/farmers');
+        break;
+      case 'users':
+        navigate('/users');
+        break;
+      case 'bills':
+        navigate('/bills');
+        break;
+      case 'dashboard':
+      default:
+        navigate('/admin');
+        break;
+    }
+  };
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [bills, setBills] = useState<BillingResponse[]>([]);
   const [filteredBills, setFilteredBills] = useState<BillingResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +65,7 @@ export function AdminDashboard() {
   const [viewingBill, setViewingBill] = useState<BillingResponse | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [billToDelete, setBillToDelete] = useState<BillingResponse | null>(null);
+  const [createBillModalOpen, setCreateBillModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
@@ -112,7 +161,7 @@ export function AdminDashboard() {
 
     try {
       await billsApi.delete(billToDelete._id);
-      await loadBills(true); // Refresh with loading state
+      await loadBills(true);
       setDeleteModalOpen(false);
       setBillToDelete(null);
     } catch (error) {
@@ -148,7 +197,7 @@ export function AdminDashboard() {
     window.URL.revokeObjectURL(url);
   };
 
-  // Calculate stats
+  // Stats calculation
   const { totalBills, totalAmount, avgAmount, monthlyIncome, monthlyBillCount, currentMonthName } = useMemo(() => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
@@ -185,7 +234,7 @@ export function AdminDashboard() {
     },
     {
       icon: DollarSign,
-      label: 'Total Amount',
+      label: 'Total Revenue',
       value: `₹${totalAmount.toLocaleString('en-IN')}`,
       sublabel: 'Lifetime earnings',
       color: theme.colors.primary.blue[400],
@@ -193,7 +242,7 @@ export function AdminDashboard() {
     },
     {
       icon: Calendar,
-      label: `${currentMonthName} Income`,
+      label: `${currentMonthName} Revenue`,
       value: `₹${monthlyIncome.toLocaleString('en-IN')}`,
       sublabel: `${monthlyBillCount} bills this month`,
       color: theme.colors.primary.indigo[400],
@@ -210,464 +259,306 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
+    <div className="min-h-screen relative overflow-hidden bg-slate-950 flex">
+      {/* Background Graphic */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
           style={{
             backgroundImage: 'url(https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=2070)',
             filter: 'brightness(0.4) saturate(1.5)'
           }}
         />
-        {/* Animated Particles */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl opacity-50 animate-float"
-            style={{ backgroundColor: 'rgba(6, 182, 212, 0.2)' }}
-          />
-          <div
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-50 animate-float"
-            style={{
-              backgroundColor: 'rgba(59, 130, 246, 0.2)',
-              animationDelay: '700ms'
-            }}
-          />
-          <div
-            className="absolute top-1/2 left-1/2 w-64 h-64 rounded-full blur-3xl opacity-50 animate-float"
-            style={{
-              backgroundColor: 'rgba(99, 102, 241, 0.2)',
-              animationDelay: '1000ms'
-            }}
-          />
-        </div>
-
-        {/* Grid Pattern */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
-            backgroundSize: '60px 60px'
-          }}
-        />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-700" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10">
-        <Navbar />
+      {/* Sidebar Navigation */}
+      <Sidebar
+        activeTab={activeTab}
+        setActiveTab={handleTabChange}
+        collapsed={sidebarCollapsed}
+        setCollapsed={setSidebarCollapsed}
+      />
 
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8">
-          {/* Header Section */}
-          <div className="mb-6 sm:mb-8">
-            <div
-              className="relative overflow-hidden backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 border animate-fade-in"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                borderColor: 'rgba(255, 255, 255, 0.15)'
-              }}
-            >
-              <div className="relative z-10">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      {/* Main Content Area */}
+      <main
+        className={`flex-1 transition-all duration-300 relative z-10 p-4 sm:p-6 lg:p-8 overflow-y-auto ${
+          sidebarCollapsed ? 'ml-20' : 'ml-64'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* TAB 1: DASHBOARD OVERVIEW */}
+          {activeTab === 'dashboard' && (
+            <div className="space-y-8 animate-fade-in">
+              {/* Header Banner */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
                   <div>
-                    <h1
-                      className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent"
-                    >
-                      Admin Dashboard
+                    <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-300 bg-clip-text text-transparent mb-2">
+                      Admin Command Center
                     </h1>
-                    <p
-                      className="text-base sm:text-lg"
-                      style={{ color: theme.colors.primary.cyan[100] }}
-                    >
-                      Manage all bills and operators efficiently
+                    <p className="text-cyan-100/80 text-sm sm:text-base">
+                      Overview of operations, billings, farmers, and user metrics
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button
+                      onClick={() => setCreateBillModalOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg shadow-cyan-500/30 hover:scale-105 transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      Create Bill
+                    </button>
                     <button
                       onClick={() => loadBills(true)}
                       disabled={refreshing}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        color: theme.colors.neutral.white,
-                        border: '1px solid rgba(255, 255, 255, 0.2)'
-                      }}
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all"
                     >
                       <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-                      {refreshing ? 'Refreshing...' : 'Refresh'}
-                    </button>
-                    <button
-                      onClick={exportToCSV}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(59, 130, 246, 0.9))',
-                        color: theme.colors.neutral.white
-                      }}
-                    >
-                      <Download className="w-4 h-4" />
-                      Export CSV
+                      Refresh
                     </button>
                   </div>
                 </div>
-
-                {/* Quick Search */}
-                <div className="relative max-w-md">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5"
-                    style={{ color: 'rgba(255, 255, 255, 0.4)' }} />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearch}
-                    placeholder="Search bills by farmer ID, amount, or ID..."
-                    className="w-full pl-12 pr-4 py-3 rounded-xl backdrop-blur-sm focus:outline-none focus:ring-2 transition-all duration-200"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: theme.colors.neutral.white,
-                      focusRing: `0 0 0 2px ${theme.colors.primary.cyan[400]}`
-                    }}
-                  />
-                </div>
               </div>
-              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 sm:w-40 sm:h-40 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 rounded-full blur-2xl" />
-            </div>
-          </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:border-cyan-500/30 group animate-slide-up"
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  borderColor: 'rgba(255, 255, 255, 0.15)',
-                  animationDelay: `${index * 100}ms`
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p
-                      className="text-xs sm:text-sm font-medium mb-1"
-                      style={{ color: theme.colors.primary.cyan[100] }}
-                    >
-                      {stat.label}
-                    </p>
-                    <p
-                      className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2 group-hover:text-cyan-300 transition-colors duration-300"
-                      style={{ color: theme.colors.neutral.white }}
-                    >
-                      {stat.value}
-                    </p>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'rgba(207, 250, 254, 0.6)' }}
-                    >
-                      {stat.sublabel}
-                    </p>
-                  </div>
+              {/* Stats Cards Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {stats.map((stat, idx) => (
                   <div
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                    style={{
-                      backgroundColor: stat.bgColor,
-                      boxShadow: `0 0 20px ${stat.color}40`
-                    }}
+                    key={idx}
+                    className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/15 shadow-xl hover:border-cyan-400/40 hover:scale-[1.02] transition-all"
                   >
-                    <stat.icon className="w-6 h-6 sm:w-7 sm:h-7 group-hover:scale-110 transition-transform duration-300"
-                      style={{ color: stat.color }} />
+                    <div className="flex items-center justify-between mb-4">
+                      <div
+                        className="w-12 h-12 rounded-xl flex items-center justify-center"
+                        style={{ backgroundColor: stat.bgColor }}
+                      >
+                        <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                      </div>
+                      <span className="text-xs text-cyan-200/60 font-medium">{stat.sublabel}</span>
+                    </div>
+                    <p className="text-cyan-200/80 text-xs font-semibold uppercase tracking-wider mb-1">{stat.label}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-white">{stat.value}</p>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Filters Toggle */}
-          <div className="mb-4">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                color: theme.colors.neutral.white,
-                border: '1px solid rgba(255, 255, 255, 0.15)'
-              }}
-            >
-              <Filter className="w-4 h-4" />
-              {showFilters ? 'Hide Filters' : 'Show Advanced Filters'}
-              <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-cyan-500/20 text-cyan-300">
-                {filteredBills.length} bills
-              </span>
-            </button>
-          </div>
-
-          {/* Filters Section */}
-          {showFilters && (
-            <div className="mb-6 animate-slide-down">
-              <BillFilters onFilterChange={handleFilterChange} />
-            </div>
-          )}
-
-          {/* Bills Table */}
-          <div
-            className="backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border animate-fade-in"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              borderColor: 'rgba(255, 255, 255, 0.15)'
-            }}
-          >
-            {loading ? (
-              <div className="py-16 sm:py-20 text-center">
-                <div className="relative inline-flex mb-6">
-                  <div className="absolute inset-0">
-                    <div className="w-16 h-16 rounded-full animate-ping bg-cyan-500/30"></div>
-                  </div>
-                  <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center border-4"
-                    style={{
-                      borderColor: 'rgba(6, 182, 212, 0.3)',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)'
-                    }}
-                  >
-                    <FileText className="w-8 h-8 animate-pulse"
-                      style={{ color: theme.colors.primary.cyan[400] }} />
-                  </div>
-                </div>
-                <p
-                  className="text-lg font-medium mb-2"
-                  style={{ color: theme.colors.primary.cyan[100] }}
-                >
-                  Loading bills...
-                </p>
-                <p
-                  className="text-sm"
-                  style={{ color: 'rgba(207, 250, 254, 0.6)' }}
-                >
-                  Please wait while we fetch your data
-                </p>
-              </div>
-            ) : filteredBills.length === 0 ? (
-              <div className="py-16 sm:py-20 text-center">
+              {/* Quick Navigation Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div
-                  className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '2px solid rgba(255, 255, 255, 0.1)'
-                  }}
+                  onClick={() => handleTabChange('bills')}
+                  className="cursor-pointer bg-gradient-to-br from-cyan-950/60 to-slate-900/80 backdrop-blur-xl border border-cyan-500/30 rounded-2xl p-6 hover:border-cyan-400 transition-all shadow-xl group"
                 >
-                  <Search className="w-10 h-10" style={{ color: 'rgba(207, 250, 254, 0.4)' }} />
+                  <FileText className="w-8 h-8 text-cyan-400 mb-4 group-hover:scale-110 transition-transform" />
+                  <h3 className="text-xl font-bold text-white mb-1">Manage All Bills</h3>
+                  <p className="text-cyan-200/70 text-sm mb-4">View, edit, filter, or export complete billing transactions.</p>
+                  <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View Bills &rarr;
+                  </span>
                 </div>
-                <p
-                  className="text-lg font-medium mb-2"
-                  style={{ color: theme.colors.primary.cyan[100] }}
+
+                <div
+                  onClick={() => handleTabChange('farmers')}
+                  className="cursor-pointer bg-gradient-to-br from-blue-950/60 to-slate-900/80 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-6 hover:border-blue-400 transition-all shadow-xl group"
                 >
-                  No bills found
-                </p>
-                <p
-                  className="text-sm max-w-md mx-auto mb-6"
-                  style={{ color: 'rgba(207, 250, 254, 0.6)' }}
+                  <UserCheck className="w-8 h-8 text-blue-400 mb-4 group-hover:scale-110 transition-transform" />
+                  <h3 className="text-xl font-bold text-white mb-1">Farmers Directory</h3>
+                  <p className="text-cyan-200/70 text-sm mb-4">Browse farmer contacts, add new farmers, and track records.</p>
+                  <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    View Farmers &rarr;
+                  </span>
+                </div>
+
+                <div
+                  onClick={() => handleTabChange('users')}
+                  className="cursor-pointer bg-gradient-to-br from-indigo-950/60 to-slate-900/80 backdrop-blur-xl border border-indigo-500/30 rounded-2xl p-6 hover:border-indigo-400 transition-all shadow-xl group"
                 >
-                  {searchQuery ? `No results for "${searchQuery}"` : 'Try adjusting your filters or search query'}
-                </p>
-                {(searchQuery || showFilters) && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setShowFilters(false);
-                      setFilteredBills(bills);
-                    }}
-                    className="px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      color: theme.colors.neutral.white,
-                      border: '1px solid rgba(255, 255, 255, 0.15)'
-                    }}
-                  >
-                    Clear & Show All Bills
-                  </button>
-                )}
+                  <Users className="w-8 h-8 text-indigo-400 mb-4 group-hover:scale-110 transition-transform" />
+                  <h3 className="text-xl font-bold text-white mb-1">User Management</h3>
+                  <p className="text-cyan-200/70 text-sm mb-4">Add new operators, manage user roles, and control access.</p>
+                  <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    Manage Users &rarr;
+                  </span>
+                </div>
               </div>
-            ) : (
-              <>
-                <div className="px-4 sm:px-6 py-4 border-b"
-                  style={{ borderColor: 'rgba(255, 255, 255, 0.15)' }}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <h3 className="font-semibold" style={{ color: theme.colors.neutral.white }}>
-                        Bills Overview
-                      </h3>
-                      <p className="text-sm mt-1" style={{ color: 'rgba(207, 250, 254, 0.6)' }}>
-                        Showing {filteredBills.length} of {bills.length} bills
-                        {searchQuery && ` for "${searchQuery}"`}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300">
-                        ₹{totalAmount.toLocaleString('en-IN')} total
-                      </span>
-                    </div>
-                  </div>
+
+              {/* Recent Bills Preview Table */}
+              <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 overflow-hidden shadow-2xl p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white">Recent Billing Transactions</h3>
+                  <button
+                    onClick={() => handleTabChange('bills')}
+                    className="text-cyan-400 text-sm font-semibold hover:underline"
+                  >
+                    View All Bills ({bills.length}) &rarr;
+                  </button>
                 </div>
                 <BillTable
-                  bills={filteredBills}
+                  bills={bills.slice(0, 5)}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onView={handleView}
                 />
-              </>
-            )}
-          </div>
-        </div>
+              </div>
+            </div>
+          )}
 
-        {/* Modals */}
-        {editingBill && (
-          <BillEditModal
-            bill={editingBill}
-            onClose={() => setEditingBill(null)}
-            onSuccess={handleUpdateSuccess}
-          />
-        )}
-
-        {viewingBill && (
-          <BillViewModal bill={viewingBill} onClose={() => setViewingBill(null)} />
-        )}
-
-        {/* Delete Confirmation Modal */}
-        {deleteModalOpen && billToDelete && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 animate-fade-in">
-            <div
-              className="absolute inset-0 backdrop-blur-sm transition-opacity duration-300"
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
-              onClick={() => setDeleteModalOpen(false)}
-            />
-
-            <div
-              className="relative backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border w-full max-w-md mx-auto animate-scale-in"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                borderColor: 'rgba(255, 255, 255, 0.2)'
-              }}
-            >
-              <div className="p-6">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse"
-                  style={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                    boxShadow: '0 0 20px rgba(239, 68, 68, 0.3)'
-                  }}
-                >
-                  <AlertCircle className="w-6 h-6" style={{ color: theme.colors.semantic.error }} />
+          {/* TAB 2: ALL BILLS LIST */}
+          {activeTab === 'bills' && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/10 backdrop-blur-xl p-6 rounded-2xl border border-white/15">
+                <div>
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    <FileText className="w-7 h-7 text-cyan-400" />
+                    All Billing Records
+                  </h2>
+                  <p className="text-cyan-200/80 text-sm">Comprehensive list of all drone operation bills</p>
                 </div>
-                <h3
-                  className="text-lg sm:text-xl font-bold text-center mb-2"
-                  style={{ color: theme.colors.neutral.white }}
-                >
-                  Delete Bill
-                </h3>
-                <p
-                  className="text-center text-sm mb-6"
-                  style={{ color: theme.colors.primary.cyan[100] }}
-                >
-                  Are you sure you want to delete bill for <strong>{billToDelete.farmer_id}</strong>? This action cannot be undone.
-                </p>
-                <div className="flex gap-3">
+
+                <div className="flex flex-wrap items-center gap-3">
                   <button
-                    onClick={() => setDeleteModalOpen(false)}
-                    className="flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      color: theme.colors.neutral.white,
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
-                    }}
+                    onClick={() => setCreateBillModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold shadow-lg hover:scale-105 transition-all text-sm"
                   >
-                    Cancel
+                    <Plus className="w-4 h-4" />
+                    Create Bill
                   </button>
                   <button
-                    onClick={confirmDelete}
-                    className="flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95 hover:opacity-90"
-                    style={{
-                      background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-                      color: theme.colors.neutral.white,
-                      boxShadow: '0 4px 20px rgba(239, 68, 68, 0.3)'
-                    }}
+                    onClick={exportToCSV}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all text-sm"
                   >
-                    Delete
+                    <Download className="w-4 h-4" />
+                    Export CSV
+                  </button>
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 transition-all text-sm"
+                  >
+                    <Filter className="w-4 h-4" />
+                    {showFilters ? 'Hide Filters' : 'Filters'}
                   </button>
                 </div>
               </div>
+
+              {/* Quick Search Bar */}
+              <div className="relative max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  placeholder="Search bills by farmer, amount, or ID..."
+                  className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/15 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400 backdrop-blur-sm"
+                />
+              </div>
+
+              {showFilters && (
+                <div className="animate-slide-down">
+                  <BillFilters onFilterChange={handleFilterChange} />
+                </div>
+              )}
+
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+                {loading ? (
+                  <div className="py-20 text-center text-cyan-200">
+                    <div className="w-10 h-10 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                    Loading bills...
+                  </div>
+                ) : filteredBills.length === 0 ? (
+                  <div className="py-20 text-center text-cyan-200/60">
+                    No bills found.
+                  </div>
+                ) : (
+                  <BillTable
+                    bills={filteredBills}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onView={handleView}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: FARMERS LIST */}
+          {activeTab === 'farmers' && (
+            <div className="animate-fade-in">
+              <FarmersList />
+            </div>
+          )}
+
+          {/* TAB 4: USERS MANAGEMENT */}
+          {activeTab === 'users' && (
+            <div className="animate-fade-in">
+              <UserManagement />
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Modals */}
+      {editingBill && (
+        <BillEditModal
+          bill={editingBill}
+          onClose={() => setEditingBill(null)}
+          onSuccess={handleUpdateSuccess}
+        />
+      )}
+
+      {viewingBill && (
+        <BillViewModal bill={viewingBill} onClose={() => setViewingBill(null)} />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && billToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-slate-900 border border-white/20 rounded-2xl p-6 shadow-2xl text-center space-y-4">
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto" />
+            <h3 className="text-xl font-bold text-white">Delete Bill Record?</h3>
+            <p className="text-cyan-200/80 text-sm">
+              Are you sure you want to delete bill for <strong>{billToDelete.farmer_id}</strong>? Action cannot be undone.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setDeleteModalOpen(false)}
+                className="flex-1 py-2.5 rounded-xl border border-white/20 text-white hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-2.5 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600"
+              >
+                Delete
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Add these CSS animations to your global styles */}
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        
-        @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out forwards;
-        }
-        
-        .animate-slide-down {
-          animation: slide-down 0.3s ease-out forwards;
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out forwards;
-        }
-        
-        .animate-scale-in {
-          animation: scale-in 0.2s ease-out forwards;
-        }
-      `}</style>
+      {/* Create Bill Modal */}
+      {createBillModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="w-full max-w-xl my-8">
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => setCreateBillModalOpen(false)}
+                className="text-white/70 hover:text-white bg-white/10 px-3 py-1 rounded-lg text-sm"
+              >
+                Close
+              </button>
+            </div>
+            <BillForm
+              onSuccess={() => {
+                setCreateBillModalOpen(false);
+                loadBills(true);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

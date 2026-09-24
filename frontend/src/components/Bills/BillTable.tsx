@@ -79,9 +79,16 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                 className="hover:bg-white/5 transition-all duration-200"
               >
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-semibold text-white">
-                    {bill.farmer_id}
-                  </span>
+                  <div>
+                    <span className="text-sm font-semibold text-white block">
+                      {bill.farmer_name || bill.farmer_id}
+                    </span>
+                    {bill.farmer_number && (
+                      <span className="text-xs text-cyan-200/60 block">
+                        {bill.farmer_number}
+                      </span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm text-white">
@@ -106,7 +113,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                 {isAdmin && (
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-white/80">
-                      {bill.operator_id}
+                      {bill.operator_name || bill.operator_id}
                     </span>
                   </td>
                 )}
@@ -165,8 +172,11 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1 min-w-0">
                 <h3 className="text-base font-bold text-white truncate">
-                  {bill.farmer_id}
+                  {bill.farmer_name || bill.farmer_id}
                 </h3>
+                {bill.farmer_number && (
+                  <p className="text-xs text-cyan-200/70">{bill.farmer_number}</p>
+                )}
                 <p className="text-xs text-white/60 mt-1">
                   {formatDate(bill.created_at)}
                 </p>
@@ -204,10 +214,10 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
               {isAdmin && (
                 <div>
                   <p className="text-xs text-white/50 uppercase tracking-wider mb-1">
-                    Operator ID
+                    Operator
                   </p>
                   <p className="text-sm text-white/80 truncate">
-                    {bill.operator_id}
+                    {bill.operator_name || bill.operator_id}
                   </p>
                 </div>
               )}

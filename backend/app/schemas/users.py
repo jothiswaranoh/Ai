@@ -1,24 +1,35 @@
-
-from app.schemas.common import PyObjectId
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+from app.schemas.common import PyObjectId, validate_strong_password
+
+
 class UserCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=2, max_length=100)
     email: EmailStr
     password: str
-    role_id: int
+    role_id: int = Field(..., ge=1, le=2)
+
+    @field_validator("password")
+    @classmethod
+    def strong_password(cls, v: str) -> str:
+        return validate_strong_password(v)
+
 
 class UserUpdate(BaseModel):
-    name: Optional[str] = None
+    """Fields an admin may update on any user."""
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
     email: Optional[EmailStr] = None
-    role_id: Optional[int] = None
+    role_id: Optional[int] = Field(None, ge=1, le=2)
     is_active: Optional[bool] = None
 
+
 class UserUpdateSelf(BaseModel):
-    """Limited fields that non-admin users can update"""
-    name: Optional[str] = None
+    """Fields a non-admin user may update on their own profile."""
+    name: Optional[str] = Field(None, min_length=2, max_length=100)
     email: Optional[EmailStr] = None
+
 
 class UserResponse(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
@@ -28,12 +39,3 @@ class UserResponse(BaseModel):
     is_active: bool
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
-
-class UserInDB(BaseModel):
-    """User model with password hash - for internal use only"""
-    id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    name: str
-    email: EmailStr
-    password: str
-    role_id: int
-    is_active: bool = True

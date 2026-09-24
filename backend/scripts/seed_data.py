@@ -3,16 +3,17 @@ Seed data script for MongoDB collections
 Run this script to populate the database with initial data
 """
 import asyncio
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
 # Add parent directory to path
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.config import settings
-from app.security.hash import hash_password
-from datetime import datetime
+from app.core.config import settings
+from app.core.security import hash_password
+
 
 async def seed_database():
     """Seed the database with initial data"""
@@ -32,28 +33,31 @@ async def seed_database():
     await db.billing.delete_many({})
     await db.password_resets.delete_many({})
     
+    now = datetime.now(timezone.utc)
+
     # 1. Seed Roles
     print("📋 Seeding roles...")
     roles_data = [
         {
+            "_id": 1,
             "name": "Admin",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+            "created_at": now,
+            "updated_at": now
         },
         {
+            "_id": 2,
             "name": "Operator",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+            "created_at": now,
+            "updated_at": now
         },
         {
+            "_id": 3,
             "name": "Viewer",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow()
+            "created_at": now,
+            "updated_at": now
         }
     ]
     roles_result = await db.roles.insert_many(roles_data)
-    admin_role_id = roles_result.inserted_ids[0]
-    operator_role_id = roles_result.inserted_ids[1]
     print(f"✅ Created {len(roles_result.inserted_ids)} roles")
     
     # 2. Seed Users
@@ -66,8 +70,8 @@ async def seed_database():
         "password": hash_password("admin123"),
         "role_id": 1,  # Admin role
         "is_active": True,
-        "created_at": datetime.utcnow(),
-        "updated_at": datetime.utcnow()
+        "created_at": now,
+        "updated_at": now
     }
     admin_result = await db.users.insert_one(admin_user)
     admin_user_id = admin_result.inserted_id
@@ -81,8 +85,8 @@ async def seed_database():
             "password": hash_password("password123"),
             "role_id": 2,  # Operator role
             "is_active": True,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -91,8 +95,8 @@ async def seed_database():
             "password": hash_password("password123"),
             "role_id": 2,
             "is_active": True,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -101,8 +105,8 @@ async def seed_database():
             "password": hash_password("password123"),
             "role_id": 2,
             "is_active": True,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         }
     ]
@@ -118,8 +122,8 @@ async def seed_database():
             "model": "T30",
             "serial_number": "DJI-T30-001",
             "per_hour_rate": 1500.00,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -127,8 +131,8 @@ async def seed_database():
             "model": "T40",
             "serial_number": "DJI-T40-001",
             "per_hour_rate": 2000.00,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -136,8 +140,8 @@ async def seed_database():
             "model": "P100",
             "serial_number": "XAG-P100-001",
             "per_hour_rate": 1800.00,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -145,8 +149,8 @@ async def seed_database():
             "model": "T20",
             "serial_number": "DJI-T20-001",
             "per_hour_rate": 1200.00,
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         }
     ]
@@ -160,36 +164,36 @@ async def seed_database():
         {
             "name": "Rajesh Kumar",
             "number": "+91 9876543210",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
             "name": "Suresh Patel",
             "number": "+91 9876543211",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
             "name": "Mahesh Singh",
             "number": "+91 9876543212",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
             "name": "Ramesh Reddy",
             "number": "+91 9876543213",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
             "name": "Ganesh Rao",
             "number": "+91 9876543214",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         }
     ]
@@ -208,8 +212,8 @@ async def seed_database():
             "time": 2.5,
             "amount": 3750.00,
             "mode_type": "upi",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -220,8 +224,8 @@ async def seed_database():
             "time": 3.0,
             "amount": 6000.00,
             "mode_type": "cash",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -232,8 +236,8 @@ async def seed_database():
             "time": 2.0,
             "amount": 3600.00,
             "mode_type": "upi",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -244,8 +248,8 @@ async def seed_database():
             "time": 3.5,
             "amount": 4200.00,
             "mode_type": "cash",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         },
         {
@@ -256,8 +260,8 @@ async def seed_database():
             "time": 5.0,
             "amount": 7500.00,
             "mode_type": "upi",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": now,
+            "updated_at": now,
             "created_by": str(admin_user_id)
         }
     ]

@@ -27,7 +27,7 @@ export interface UserUpdate {
 export const usersApi = {
     getAll: async () => {
         const response = await client.get<UserResponse[]>('/users/');
-        return response.map(user => ({
+        return response.map((user: UserResponse) => ({
             ...user,
             id: user._id || user.id // Normalize ID
         }));
@@ -42,8 +42,7 @@ export const usersApi = {
     },
 
     create: async (data: UserCreate) => {
-        // Creating a user (operator) uses the register endpoint
-        return client.post('/auth/register', data);
+        return client.post('/users/', data);
     },
 
     update: async (id: string, data: UserUpdate) => {
@@ -56,10 +55,10 @@ export const usersApi = {
 
     getOperators: async () => {
         const response = await client.get<UserResponse[]>('/users/');
-        const allUsers = response.map(user => ({
+        const allUsers = response.map((user: UserResponse) => ({
             ...user,
             id: user._id || user.id
         }));
-        return allUsers.filter(user => user.role_id === 2); // Assuming role_id 2 is Operator
+        return allUsers.filter((user: UserResponse) => user.role_id === 2); // Assuming role_id 2 is Operator
     }
 };
