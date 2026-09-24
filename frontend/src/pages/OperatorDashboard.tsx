@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, FileText, DollarSign, TrendingUp, Calendar } from 'lucide-react';
 import { Navbar } from '../components/Layout/Navbar';
 import { BillTable } from '../components/Bills/BillTable';
+import { BillForm } from '../components/Bills/BillForm';
 import { BillingResponse, billsApi } from '../apis/billing';
 import { theme } from '../theme';
 import { useAuth } from '../hooks/useAuth';
@@ -12,6 +13,7 @@ export function OperatorDashboard() {
   const { user } = useAuth();
   const [bills, setBills] = useState<BillingResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   useEffect(() => {
     loadBills();
@@ -190,8 +192,8 @@ export function OperatorDashboard() {
                 </div>
 
                 <button
-                  onClick={() => navigate('/bills/new')}
-                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full lg:w-auto whitespace-nowrap"
+                  onClick={() => setCreateModalOpen(true)}
+                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full lg:w-auto whitespace-nowrap cursor-pointer"
                   style={{
                     background: theme.gradients.primary,
                     color: theme.colors.neutral.white
@@ -339,8 +341,8 @@ export function OperatorDashboard() {
                   Create your first bill to get started with billing
                 </p>
                 <button
-                  onClick={() => navigate('/bills/new')}
-                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto"
+                  onClick={() => setCreateModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto cursor-pointer"
                   style={{
                     background: theme.gradients.primary,
                     color: theme.colors.neutral.white
@@ -356,6 +358,28 @@ export function OperatorDashboard() {
           </div>
         </div>
       </div>
+
+      {/* Create Bill Modal */}
+      {createModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="w-full max-w-xl my-8">
+            <div className="flex justify-end mb-2">
+              <button
+                onClick={() => setCreateModalOpen(false)}
+                className="text-white/70 hover:text-white bg-white/10 px-3 py-1 rounded-lg text-sm cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+            <BillForm
+              onSuccess={() => {
+                setCreateModalOpen(false);
+                loadBills();
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
