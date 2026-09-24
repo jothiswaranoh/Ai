@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, FileText, DollarSign, TrendingUp, Calendar } from 'lucide-react';
+import { Plus, FileText, DollarSign, TrendingUp, Calendar, Sprout } from 'lucide-react';
 import { Navbar } from '../components/Layout/Navbar';
 import { BillTable } from '../components/Bills/BillTable';
 import { BillForm } from '../components/Bills/BillForm';
 import { BillingResponse, billsApi } from '../apis/billing';
-import { theme } from '../theme';
 import { useAuth } from '../hooks/useAuth';
 
 export function OperatorDashboard() {
@@ -24,10 +23,6 @@ export function OperatorDashboard() {
 
     try {
       setLoading(true);
-      // Backend handles permission check. If operator, they only get their own bills anyway.
-      // But we can explicitely filter if we want to be safe or if the API requires it.
-      // The updated backend router logic handles "if not admin -> restrict to self".
-      // But passing operator_id is fine too.
       const data = await billsApi.getAll({ operator_id: user.id });
       setBills(data);
     } catch (error) {
@@ -66,10 +61,10 @@ export function OperatorDashboard() {
       value: totalBills,
       sublabel: 'Bills created by you',
       badge: 'All Time',
-      color: theme.colors.primary.cyan[400],
-      bgColor: 'rgba(6, 182, 212, 0.2)',
-      badgeColor: theme.colors.primary.cyan[300],
-      badgeBg: 'rgba(6, 182, 212, 0.2)',
+      color: '#34d399',
+      bgColor: 'rgba(16, 185, 129, 0.15)',
+      badgeColor: '#6ee7b7',
+      badgeBg: 'rgba(16, 185, 129, 0.2)',
     },
     {
       icon: DollarSign,
@@ -77,10 +72,10 @@ export function OperatorDashboard() {
       value: `₹${totalRevenue.toLocaleString('en-IN')}`,
       sublabel: 'Lifetime earnings',
       badge: 'Revenue',
-      color: theme.colors.primary.blue[400],
-      bgColor: 'rgba(59, 130, 246, 0.2)',
-      badgeColor: theme.colors.primary.blue[300],
-      badgeBg: 'rgba(59, 130, 246, 0.2)',
+      color: '#4ade80',
+      bgColor: 'rgba(34, 197, 94, 0.15)',
+      badgeColor: '#86efac',
+      badgeBg: 'rgba(34, 197, 94, 0.2)',
     },
     {
       icon: Calendar,
@@ -88,10 +83,10 @@ export function OperatorDashboard() {
       value: `₹${monthlyRevenue.toLocaleString('en-IN')}`,
       sublabel: `${monthlyBillCount} bills this month`,
       badge: currentMonthName,
-      color: theme.colors.primary.indigo[400],
-      bgColor: 'rgba(99, 102, 241, 0.2)',
-      badgeColor: theme.colors.primary.indigo[300],
-      badgeBg: 'rgba(99, 102, 241, 0.2)',
+      color: '#fbbf24',
+      bgColor: 'rgba(245, 158, 11, 0.15)',
+      badgeColor: '#fde68a',
+      badgeBg: 'rgba(245, 158, 11, 0.2)',
     },
     {
       icon: TrendingUp,
@@ -99,137 +94,78 @@ export function OperatorDashboard() {
       value: `₹${avgBillAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       sublabel: 'Per transaction',
       badge: 'Average',
-      color: theme.colors.accent.teal[400],
-      bgColor: 'rgba(20, 184, 166, 0.2)',
-      badgeColor: theme.colors.accent.teal[300],
+      color: '#2dd4bf',
+      bgColor: 'rgba(20, 184, 166, 0.15)',
+      badgeColor: '#99f6e4',
       badgeBg: 'rgba(20, 184, 166, 0.2)',
     },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
+    <div className="min-h-screen relative overflow-hidden bg-stone-950 text-stone-100 font-sans selection:bg-emerald-500 selection:text-white">
+      {/* Background Graphic */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=2070)',
-            filter: 'brightness(0.4)'
+            backgroundImage: 'url(/images/hero-drone.jpg)',
+            filter: 'brightness(0.3) saturate(1.2)'
           }}
         />
-        <div
-          className="absolute inset-0"
-        />
-
-        {/* Animated Particles */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute top-1/4 left-1/4 w-72 h-72 rounded-full blur-3xl animate-pulse"
-            style={{ backgroundColor: 'rgba(6, 182, 212, 0.1)' }}
-          />
-          <div
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse"
-            style={{
-              backgroundColor: 'rgba(59, 130, 246, 0.1)',
-              animationDelay: '700ms'
-            }}
-          />
-          <div
-            className="absolute top-1/2 left-1/2 w-64 h-64 rounded-full blur-3xl animate-pulse"
-            style={{
-              backgroundColor: 'rgba(99, 102, 241, 0.1)',
-              animationDelay: '1000ms'
-            }}
-          />
-        </div>
-
-        {/* Grid Pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }}
-        />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl animate-pulse delay-700" />
       </div>
 
       {/* Content */}
       <div className="relative z-10">
         <Navbar />
 
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Hero Section */}
           <div className="mb-6 sm:mb-8">
-            <div
-              className="relative overflow-hidden backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl p-5 sm:p-6 lg:p-8 border"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                borderColor: 'rgba(255, 255, 255, 0.2)'
-              }}
-            >
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: 'rgba(6, 182, 212, 0.2)' }}
-                  >
-                    <FileText className="w-6 h-6 sm:w-7 sm:h-7" style={{ color: theme.colors.primary.cyan[400] }} />
+            <div className="relative overflow-hidden backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-stone-800 bg-stone-900/85 shadow-2xl">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative z-10">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 text-emerald-400 shadow-md shadow-emerald-950/50">
+                    <Sprout className="w-7 h-7" />
                   </div>
-                  <div className="min-w-0">
-                    <h1
-                      className="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold mb-1 sm:mb-2"
-                      style={{ color: theme.colors.neutral.white }}
-                    >
-                      My Bills
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">
+                      Pilot Flight Records
                     </h1>
-                    <p
-                      className="text-sm sm:text-base lg:text-lg truncate"
-                      style={{ color: theme.colors.primary.cyan[100] }}
-                    >
-                      Welcome back, <span className="font-semibold">{user?.full_name || 'Operator'}</span>!
+                    <p className="text-sm text-stone-300">
+                      Welcome back, <span className="font-semibold text-emerald-400">{user?.full_name || 'Drone Pilot'}</span>
                     </p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setCreateModalOpen(true)}
-                  className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 font-semibold rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full lg:w-auto whitespace-nowrap cursor-pointer"
-                  style={{
-                    background: theme.gradients.primary,
-                    color: theme.colors.neutral.white
-                  }}
+                  className="flex items-center justify-center gap-2 px-5 py-3 font-bold rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white shadow-emerald-950/60 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                 >
-                  <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="text-sm sm:text-base">Create New Bill</span>
+                  <Plus className="w-5 h-5" />
+                  <span>Create New Bill</span>
                 </button>
               </div>
-
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 sm:w-40 sm:h-40 bg-white/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 -mb-4 -ml-4 w-20 h-20 sm:w-32 sm:h-32 bg-white/10 rounded-full blur-2xl" />
             </div>
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="backdrop-blur-md rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-5 lg:p-6 border hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  borderColor: 'rgba(255, 255, 255, 0.2)'
-                }}
+                className="backdrop-blur-xl rounded-2xl shadow-xl p-5 sm:p-6 border border-stone-800 bg-stone-900/80 hover:border-emerald-500/30 transition-all hover:scale-[1.01]"
               >
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="flex items-center justify-between mb-4">
                   <div
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center border border-white/5"
                     style={{ backgroundColor: stat.bgColor }}
                   >
-                    <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" style={{ color: stat.color }} />
+                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
                   </div>
                   <span
-                    className="text-xs font-semibold px-2 py-1 rounded-full"
+                    className="text-xs font-semibold px-2.5 py-1 rounded-full border border-white/5"
                     style={{
                       color: stat.badgeColor,
                       backgroundColor: stat.badgeBg
@@ -238,22 +174,13 @@ export function OperatorDashboard() {
                     {stat.badge}
                   </span>
                 </div>
-                <h3
-                  className="text-xs sm:text-sm font-medium mb-1"
-                  style={{ color: theme.colors.primary.cyan[100] }}
-                >
+                <h3 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-1">
                   {stat.label}
                 </h3>
-                <p
-                  className="text-xl sm:text-2xl lg:text-3xl font-bold"
-                  style={{ color: theme.colors.neutral.white }}
-                >
+                <p className="text-2xl sm:text-3xl font-bold text-white">
                   {stat.value}
                 </p>
-                <p
-                  className="text-xs mt-1 sm:mt-2"
-                  style={{ color: 'rgba(207, 250, 254, 0.8)' }}
-                >
+                <p className="text-xs text-stone-400 mt-1">
                   {stat.sublabel}
                 </p>
               </div>
@@ -261,40 +188,19 @@ export function OperatorDashboard() {
           </div>
 
           {/* Bills Table Section */}
-          <div
-            className="backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              borderColor: 'rgba(255, 255, 255, 0.2)'
-            }}
-          >
+          <div className="backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-stone-800 bg-stone-900/80">
             {/* Header */}
-            <div
-              className="px-4 sm:px-6 py-4 border-b"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'rgba(255, 255, 255, 0.2)'
-              }}
-            >
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(6, 182, 212, 0.2)' }}
-                >
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: theme.colors.primary.cyan[400] }} />
+            <div className="px-6 py-4 border-b border-stone-800 bg-stone-950/60 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                  <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2
-                    className="text-base sm:text-lg lg:text-xl font-bold"
-                    style={{ color: theme.colors.neutral.white }}
-                  >
-                    Recent Bills
+                  <h2 className="text-lg font-bold text-white">
+                    Recent Billing Records
                   </h2>
-                  <p
-                    className="text-xs sm:text-sm"
-                    style={{ color: 'rgba(207, 250, 254, 0.8)' }}
-                  >
-                    View and manage all your created bills
+                  <p className="text-xs text-stone-400">
+                    Showing your logged agricultural spray jobs
                   </p>
                 </div>
               </div>
@@ -302,55 +208,15 @@ export function OperatorDashboard() {
 
             {/* Content */}
             {loading ? (
-              <div className="py-12 sm:py-16 text-center">
-                <div className="relative inline-flex">
-                  <div
-                    className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4"
-                    style={{ borderColor: 'rgba(255, 255, 255, 0.2)' }}
-                  />
-                  <div
-                    className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4 border-t-transparent absolute top-0 left-0"
-                    style={{ borderColor: theme.colors.primary.cyan[400] }}
-                  />
-                </div>
-                <p
-                  className="mt-4 sm:mt-6 font-medium"
-                  style={{ color: theme.colors.primary.cyan[100] }}
-                >
-                  Loading bills...
-                </p>
+              <div className="py-16 text-center text-emerald-400">
+                <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-sm font-medium">Loading bills...</p>
               </div>
             ) : bills.length === 0 ? (
-              <div className="py-12 sm:py-16 text-center px-4">
-                <div
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-4"
-                  style={{ backgroundColor: 'rgba(6, 182, 212, 0.2)' }}
-                >
-                  <FileText className="w-8 h-8 sm:w-10 sm:h-10" style={{ color: theme.colors.primary.cyan[400] }} />
-                </div>
-                <h3
-                  className="text-base sm:text-lg font-semibold mb-2"
-                  style={{ color: theme.colors.neutral.white }}
-                >
-                  No bills yet
-                </h3>
-                <p
-                  className="mb-6 text-sm sm:text-base"
-                  style={{ color: 'rgba(207, 250, 254, 0.8)' }}
-                >
-                  Create your first bill to get started with billing
-                </p>
-                <button
-                  onClick={() => setCreateModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full sm:w-auto cursor-pointer"
-                  style={{
-                    background: theme.gradients.primary,
-                    color: theme.colors.neutral.white
-                  }}
-                >
-                  <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-                  Create Your First Bill
-                </button>
+              <div className="py-16 text-center text-stone-400">
+                <FileText className="w-12 h-12 text-stone-600 mx-auto mb-3" />
+                <p className="text-base font-semibold text-white">No bills created yet</p>
+                <p className="text-xs mt-1">Click "Create New Bill" above to record your first farm spray job.</p>
               </div>
             ) : (
               <BillTable bills={bills} />
@@ -366,7 +232,7 @@ export function OperatorDashboard() {
             <div className="flex justify-end mb-2">
               <button
                 onClick={() => setCreateModalOpen(false)}
-                className="text-white/70 hover:text-white bg-white/10 px-3 py-1 rounded-lg text-sm cursor-pointer"
+                className="text-stone-400 hover:text-white bg-stone-800 px-3.5 py-1.5 rounded-xl text-sm border border-stone-700 cursor-pointer"
               >
                 Close
               </button>

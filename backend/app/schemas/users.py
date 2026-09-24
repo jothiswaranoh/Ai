@@ -25,6 +25,15 @@ class UserUpdate(BaseModel):
     is_active: Optional[bool] = None
 
 
+class AdminResetPassword(BaseModel):
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def strong_password(cls, v: str) -> str:
+        return validate_strong_password(v)
+
+
 class UserUpdateSelf(BaseModel):
     """Fields a non-admin user may update on their own profile."""
     name: Optional[str] = Field(None, min_length=2, max_length=100)

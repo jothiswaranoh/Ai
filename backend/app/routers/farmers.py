@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -7,6 +8,8 @@ from app.core.database import get_db
 from app.dependencies import get_current_active_user
 from app.schemas.farmers import FarmerCreate, FarmerResponse, FarmerUpdate
 from app.services import farmers as farmer_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/farmers", tags=["Farmers"])
 
@@ -49,6 +52,7 @@ async def create_farmer(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to retrieve created farmer",
         )
+    logger.info("User %s created farmer %s (phone: %s, ID: %s)", current_user["_id"], payload.name, payload.number, inserted_id)
     return record
 
 
@@ -120,13 +124,14 @@ async def update_farmer(
 
     update_data["updated_at"] = datetime.now(timezone.utc)
     success = await farmer_service.update_farmer(farmer_id, update_data, db)
+    logger.info("User %s updated farmer %s with fields %s", current_user["_id"], farmer_id, list(update_data.keys()))
     return {"message": "Farmer updated successfully"}
 
 
 @router.delete("/{farmer_id}", response_model=dict)
 async def delete_farmer(
     farmer_id: str,
-    _: dict = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
     db=Depends(get_db),
 ):
     """Delete a farmer record."""
@@ -136,4 +141,5 @@ async def delete_farmer(
             status_code=status.HTTP_404_NOT_FOUND, detail="Farmer not found"
         )
     await farmer_service.delete_farmer(farmer_id, db)
+    logger.info("User %s deleted farmer %s (%s)", current_user["_id"], farmer_id, farmer.get("name"))
     return {"message": "Farmer deleted successfully"}

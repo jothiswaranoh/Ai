@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -8,6 +9,8 @@ from app.dependencies import admin_required, get_current_active_user
 from app.enums import UserRole
 from app.schemas.billing import BillingCreate, BillingResponse, BillingUpdate
 from app.services import billing as billing_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/billing", tags=["Billing"])
 
@@ -28,6 +31,7 @@ async def create_billing(
         "updated_by": None,
     }
     inserted_id = await billing_service.create_billing(data, db)
+    logger.info("User %s created billing record %s for farmer %s, amount %s", current_user["_id"], inserted_id, payload.farmer_id, payload.amount)
     record = await billing_service.get_billing_by_id(inserted_id, db)
     if not record:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to retrieve created record")
@@ -128,4 +132,5 @@ async def delete_billing(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Billing record not found")
 
     await billing_service.delete_billing(billing_id, db)
+    logger.info("Admin %s deleted bill record %s", current_user["_id"], billing_id)
     return {"message": "Billing record deleted successfully"}

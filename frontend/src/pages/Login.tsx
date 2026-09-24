@@ -1,8 +1,8 @@
 import { useState, useEffect, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Plane, Lock, Mail, Eye, EyeOff } from 'lucide-react';
-import { MOCK_PASSWORD } from '../lib/mockData';
+import { Lock, Mail, Eye, EyeOff, ArrowLeft, Home, ShieldCheck } from 'lucide-react';
+import { DroneIcon } from '../components/Landing/DroneIcon';
 
 export function Login() {
   const navigate = useNavigate();
@@ -38,105 +38,104 @@ export function Login() {
         navigate('/dashboard'); // fallback
       }
     } else {
-      setError(result.error || 'Login failed');
+      setError(result.error || 'Invalid email or password. Please try again.');
     }
 
     setLoading(false);
   };
 
-
-  const fillDemoCredentials = (role: 'admin' | 'operator1' | 'operator2') => {
-    const emails = {
-      admin: 'admin@shamuga.com',
-      operator1: 'operator1@shamuga.com',
-      operator2: 'operator2@shamuga.com'
-    };
-    setEmail(emails[role]);
-    setPassword(MOCK_PASSWORD);
-    setError('');
-  };
-
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center px-4">
-      {/* Animated Background with Drone Image */}
+    <div className="min-h-screen relative overflow-hidden flex flex-col justify-between bg-stone-950 text-stone-100 font-sans selection:bg-emerald-500 selection:text-white">
+      {/* Background Photography with Deep Agricultural Overlay */}
       <div className="absolute inset-0 z-0">
-        {/* Drone aerial background */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=2070)',
-            filter: 'brightness(0.4)'
-          }}
+        <img
+          src="/images/hero-drone.jpg"
+          alt="Agriculture drone background"
+          className="w-full h-full object-cover object-center filter brightness-[0.28] saturate-[1.2]"
         />
+        {/* Deep emerald and stone gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-stone-950/95 via-stone-950/80 to-stone-950" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-emerald-950/40 via-transparent to-stone-950/80" />
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/90 via-purple-900/85 to-pink-900/90" />
-
-        {/* Animated Particles */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-700" />
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-        </div>
-
-        {/* Grid Pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }}
-        />
+        {/* Ambient atmospheric glows */}
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-green-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* Login Container */}
-      <div className="relative z-10 w-full max-w-md">
-        {/* Logo and Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full mb-4 shadow-2xl shadow-cyan-500/50 animate-float">
-            <Plane className="w-10 h-10 text-white" />
+      {/* Top Header Bar with Back to Home Button */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 flex items-center justify-between">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-stone-900/80 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-800 hover:border-emerald-500/40 text-xs sm:text-sm font-medium transition-all group backdrop-blur-md shadow-lg shadow-black/40"
+          title="Return to Marketing Homepage"
+        >
+          <ArrowLeft className="w-4 h-4 text-emerald-400 group-hover:-translate-x-0.5 transition-transform" />
+          <Home className="w-3.5 h-3.5 text-stone-400" />
+          <span>Back to Home</span>
+        </Link>
+
+        <div className="hidden sm:flex items-center gap-2 text-xs text-stone-400">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <span>Authorized Personnel Portal</span>
+        </div>
+      </div>
+
+      {/* Main Login Card Container */}
+      <div className="relative z-10 w-full max-w-md mx-auto px-4 py-8 flex-1 flex flex-col justify-center">
+        {/* Header / Brand */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-500 shadow-xl shadow-emerald-950/60 border border-emerald-400/30 mb-4">
+            <DroneIcon className="w-9 h-9 text-white" />
           </div>
-          <h1 className="text-5xl font-bold text-white mb-2 tracking-tight">
-            Shamuga Billing
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Shamuga Farm Service
           </h1>
-          <p className="text-lg text-cyan-200">Streamline Your Operations</p>
+          <p className="text-sm text-emerald-400 font-medium mt-1">
+            Operator & Admin Portal
+          </p>
         </div>
 
-        {/* Login Card */}
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 animate-slide-up">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Login Form Card */}
+        <div className="bg-stone-900/85 backdrop-blur-2xl rounded-3xl shadow-2xl border border-stone-800/90 p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Error Message */}
             {error && (
-              <div className="bg-red-500/20 border border-red-400/50 text-red-100 px-4 py-3 rounded-xl backdrop-blur-sm animate-shake">
-                <p className="text-sm font-medium">{error}</p>
+              <div className="bg-red-500/10 border border-red-500/30 text-red-200 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium animate-shake">
+                {error}
               </div>
             )}
 
             {/* Email Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white/90 flex items-center gap-2">
-                <Mail className="w-4 h-4" />
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Mail className="w-3.5 h-3.5 text-emerald-400" />
                 Email Address
               </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@shamuga.com"
-                  autoComplete="email"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all backdrop-blur-sm"
-                />
-              </div>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@shamuga.com"
+                autoComplete="email"
+                className="w-full px-4 py-3 bg-stone-950/80 border border-stone-700/80 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+              />
             </div>
 
             {/* Password Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-white/90 flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Password
-              </label>
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-emerald-400" />
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-stone-400 hover:text-emerald-400 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -145,14 +144,15 @@ export function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   autoComplete="current-password"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all backdrop-blur-sm pr-12"
+                  className="w-full px-4 py-3 bg-stone-950/80 border border-stone-700/80 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors pr-11 font-sans"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200 transition-colors"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -161,105 +161,46 @@ export function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/60 hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-950/60 hover:shadow-emerald-900/80 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
             >
               {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in...
-                </span>
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Signing in...</span>
+                </>
               ) : (
                 'Sign In'
               )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-8 pt-6 border-t border-white/10">
-            <p className="text-sm text-white/70 text-center mb-4 font-medium">
-              Quick Demo Access
-            </p>
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => fillDemoCredentials('admin')}
-                className="w-full px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 border border-purple-400/30 text-white text-sm rounded-lg transition-all duration-300 backdrop-blur-sm hover:scale-[1.02]"
-              >
-                <span className="font-semibold">Admin</span> • admin@shamuga.com
-              </button>
-              <button
-                type="button"
-                onClick={() => fillDemoCredentials('operator1')}
-                className="w-full px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 border border-blue-400/30 text-white text-sm rounded-lg transition-all duration-300 backdrop-blur-sm hover:scale-[1.02]"
-              >
-                <span className="font-semibold">Operator 1</span> • operator1@shamuga.com
-              </button>
-              <button
-                type="button"
-                onClick={() => fillDemoCredentials('operator2')}
-                className="w-full px-4 py-2 bg-gradient-to-r from-green-500/20 to-teal-500/20 hover:from-green-500/30 hover:to-teal-500/30 border border-green-400/30 text-white text-sm rounded-lg transition-all duration-300 backdrop-blur-sm hover:scale-[1.02]"
-              >
-                <span className="font-semibold">Operator 2</span> • operator2@shamuga.com
-              </button>
-            </div>
-            <p className="text-xs text-white/50 text-center mt-3">
-              Password: <span className="font-mono">{MOCK_PASSWORD}</span>
-            </p>
-          </div>
         </div>
 
-        {/* Footer */}
-        <div className="text-center mt-6 text-white/60 text-sm">
-          <p>© 2025 Shamuga Billing. All rights reserved.</p>
-        </div>
+        {/* Support Note */}
+        <p className="text-center text-xs text-stone-500 mt-6">
+          Need access or facing login issues? Contact the admin desk at{' '}
+          <a href="tel:9080369667" className="text-stone-400 hover:text-emerald-400 font-mono underline">
+            9080369667
+          </a>
+        </p>
+      </div>
+
+      {/* Bottom Footer */}
+      <div className="relative z-10 w-full text-center py-4 border-t border-stone-900 text-xs text-stone-500">
+        <p>© {new Date().getFullYear()} Shamuga Farm Service. All rights reserved.</p>
       </div>
 
       <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-10px); }
-          75% { transform: translateX(10px); }
+          25% { transform: translateX(-6px); }
+          75% { transform: translateX(6px); }
         }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-        
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out 0.2s both;
-        }
-        
         .animate-shake {
           animation: shake 0.3s ease-in-out;
-        }
-        
-        .delay-700 {
-          animation-delay: 0.7s;
-        }
-        
-        .delay-1000 {
-          animation-delay: 1s;
         }
       `}</style>
     </div>
   );
 }
+
+export default Login;

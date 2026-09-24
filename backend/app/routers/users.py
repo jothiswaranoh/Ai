@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -5,8 +6,10 @@ from app.core.database import get_db
 from app.core.security import hash_password
 from app.dependencies import admin_required, get_current_active_user
 from app.enums import UserRole
-from app.schemas.users import UserCreate, UserResponse, UserUpdate, UserUpdateSelf
+from app.schemas.users import AdminResetPassword, UserCreate, UserResponse, UserUpdate, UserUpdateSelf
 from app.services import users as user_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -161,4 +164,23 @@ async def delete_user(
     if not success:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    logger.info("Admin %s deleted user %s", current_user["_id"], user_id)
     return {"message": "User deleted successfully"}
+
+
+@router.post("/{user_id}/reset-password", response_model=dict)
+async def admin_reset_password(
+    user_id: str,
+    payload: AdminResetPassword,
+    current_user: dict = Depends(admin_required),
+    db=Depends(get_db),
+):
+    """Admin resets any user/operator's password directly."""
+    hashed = hash_password(payload.new_password)
+    now = datetime.now(timezone.utc)
+    success = await user_service.update_user(user_id, {"password": hashed, "updated_at": now}, db)
+    if not success:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    logger.info("Admin %s reset password for user %s", current_user["_id"], user_id)
+    return {"message": "User password reset successfully"}

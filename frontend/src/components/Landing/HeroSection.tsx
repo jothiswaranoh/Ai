@@ -37,7 +37,7 @@ export function HeroSection({ onOpenBooking }: HeroSectionProps) {
   ];
 
   return (
-    <section className="relative min-h-[92vh] sm:min-h-screen flex items-center pt-28 pb-16 overflow-hidden bg-stone-950">
+    <section className="relative min-h-[92vh] sm:min-h-screen flex items-center pt-32 sm:pt-36 lg:pt-40 pb-16 overflow-hidden bg-stone-950">
       {/* Background Photography with Natural Agricultural Overlay */}
       <div className="absolute inset-0 z-0">
         <img

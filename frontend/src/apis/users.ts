@@ -53,6 +53,10 @@ export const usersApi = {
         return client.delete(`/users/${id}`);
     },
 
+    resetPassword: async (id: string, newPassword: string) => {
+        return client.post(`/users/${id}/reset-password`, { new_password: newPassword });
+    },
+
     getOperators: async () => {
         const response = await client.get<UserResponse[]>('/users/');
         const allUsers = response.map((user: UserResponse) => ({

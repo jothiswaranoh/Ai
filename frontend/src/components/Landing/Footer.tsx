@@ -1,6 +1,7 @@
 import React from 'react';
-import { Plane, Phone, MessageSquare, MapPin, Mail, ArrowUpRight, ShieldCheck, Heart } from 'lucide-react';
+import { Phone, MessageSquare, MapPin, Mail, ArrowUpRight, ShieldCheck, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { DroneIcon } from './DroneIcon';
 
 export const Footer: React.FC = () => {
   return (
@@ -12,7 +13,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-700 flex items-center justify-center text-white shadow-md shadow-emerald-900/40">
-                <Plane className="w-6 h-6 -rotate-45" />
+                <DroneIcon className="w-6 h-6 text-white" />
               </div>
               <div>
                 <span className="text-xl font-bold text-white tracking-tight">Shamuga Farm Service</span>
