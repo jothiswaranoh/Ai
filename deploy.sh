@@ -6,6 +6,11 @@ echo "🏗️ Building Shamuga Drone frontend..."
 
 cd /home/jothiswaranoh5717/htdocs/Ai/frontend
 
+
+git fetch origin
+git checkout main
+git pull origin main
+
 npm install
 npm run build
 
@@ -20,9 +25,6 @@ cd /home/jothiswaranoh5717/htdocs/Ai/backend
 
 echo "📥 Pulling latest backend code..."
 
-git fetch origin
-git checkout main
-git pull origin main
 
 echo "🐍 Installing backend dependencies..."
 
