@@ -10,6 +10,7 @@ import { OperatorDashboard } from './pages/OperatorDashboard';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { CreateBill } from './pages/CreateBill';
 import { ManageOperators } from './pages/ManageOperators';
+import { HomePage } from './pages/HomePage';
 
 function DashboardRouter() {
   const { isAdmin } = useAuth();
@@ -89,7 +90,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

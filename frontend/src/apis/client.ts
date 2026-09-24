@@ -1,4 +1,8 @@
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = (
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_BASE_URL ||
+    'http://localhost:8000/api/v1'
+).replace(/\/+$/, '');
 
 type FetchOptions = Omit<RequestInit, 'body'> & {
     body?: any;
@@ -28,7 +32,8 @@ export async function client<T = any>(endpoint: string, { body, ...customConfig 
         config.body = JSON.stringify(body);
     }
 
-    const response = await fetch(`${BASE_URL}${endpoint}`, config);
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${BASE_URL}${normalizedEndpoint}`, config);
     let data: any;
     try {
         data = await response.json();

@@ -11,8 +11,14 @@ git fetch origin
 git checkout main
 git pull origin main
 
+if [ -f ".env.prod" ] && [ ! -f ".env.production" ]; then
+    cp .env.prod .env.production
+elif [ -f ".env.production" ] && [ ! -f ".env.prod" ]; then
+    cp .env.production .env.prod
+fi
+
 npm install
-npm run build
+npm run build -- --mode prod
 
 echo "🔄 Reloading Apache..."
 

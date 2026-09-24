@@ -50,10 +50,12 @@ app.add_middleware(
 #  /billing/*  — billing records (operators see own; admins see all)
 #  /farmers/*  — farmer management (CRUD)
 #
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(billing.router)
-app.include_router(farmers.router)
+API_PREFIX = "/api/v1"
+
+app.include_router(auth.router, prefix=API_PREFIX)
+app.include_router(users.router, prefix=API_PREFIX)
+app.include_router(billing.router, prefix=API_PREFIX)
+app.include_router(farmers.router, prefix=API_PREFIX)
 
 
 # ─── Health check ─────────────────────────────────────────────────────────────
