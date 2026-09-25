@@ -107,5 +107,5 @@ export const mockBills: Bill[] = [
   },
 ];
 
-// Default password for all mock users
-export const MOCK_PASSWORD = 'password123';
+// Default password for all mock users (meets strong password requirements)
+export const MOCK_PASSWORD = 'Password123';

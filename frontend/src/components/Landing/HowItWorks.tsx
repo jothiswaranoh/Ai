@@ -1,17 +1,13 @@
 import { PhoneCall, ClipboardCheck, Plane, CheckCircle2, ArrowRight } from 'lucide-react';
 
-interface HowItWorksProps {
-  onOpenBooking: () => void;
-}
-
-export function HowItWorks({ onOpenBooking }: HowItWorksProps) {
+export function HowItWorks() {
   const steps = [
     {
       step: '01',
-      title: 'Book Your Service',
-      desc: 'Farmer contacts us via Phone or WhatsApp at 9080369667 with village location, crop type, and field acreage.',
+      title: 'Contact Our Team',
+      desc: 'Farmer connects via Phone or WhatsApp at 9080369667 with village location, crop type, and field acreage.',
       icon: PhoneCall,
-      highlight: 'Instant Confirmation',
+      highlight: 'Quick Response',
     },
     {
       step: '02',
@@ -97,13 +93,15 @@ export function HowItWorks({ onOpenBooking }: HowItWorksProps) {
 
         {/* Bottom CTA Banner */}
         <div className="mt-14 text-center">
-          <button
-            onClick={onOpenBooking}
-            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-extrabold text-base shadow-xl hover:scale-105 transition-all cursor-pointer"
+          <a
+            href="https://wa.me/919080369667?text=Hello%20Shamuga%20Farm%20Service,%20I%20am%20interested%20in%20drone%20spraying%20service."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-extrabold text-base shadow-xl hover:scale-105 transition-all"
           >
-            <span>Book Your First Drone Spraying</span>
+            <span>Connect With Our Team</span>
             <ArrowRight className="w-5 h-5" />
-          </button>
+          </a>
         </div>
       </div>
     </section>

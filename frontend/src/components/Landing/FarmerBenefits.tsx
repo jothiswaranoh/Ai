@@ -1,10 +1,6 @@
-import { Clock, Users, Target, Mountain, ShieldCheck, Cpu, Droplet, ArrowRight } from 'lucide-react';
+import { Clock, Users, Target, Mountain, ShieldCheck, Cpu } from 'lucide-react';
 
-interface FarmerBenefitsProps {
-  onOpenBooking: () => void;
-}
-
-export function FarmerBenefits({ onOpenBooking }: FarmerBenefitsProps) {
+export function FarmerBenefits() {
   const benefits = [
     {
       title: 'Save Critical Farming Time',

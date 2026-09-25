@@ -1,36 +1,19 @@
-import { CheckCircle2, Play, Phone, MessageSquare, ArrowRight } from 'lucide-react';
+import { ArrowRight, Phone, MessageSquare } from 'lucide-react';
 
-interface DroneInActionProps {
-  onOpenBooking: () => void;
-}
-
-export function DroneInAction({ onOpenBooking }: DroneInActionProps) {
+export function DroneInAction() {
   return (
-    <section className="py-24 bg-stone-900 relative overflow-hidden">
+    <section className="py-24 bg-stone-900 relative overflow-hidden border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3.5 py-1.5 rounded-full border border-emerald-500/30">
-            Real Farmland Deployments
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Technology That Works <span className="text-emerald-400">in the Field.</span>
-          </h2>
-          <p className="text-stone-300 text-base sm:text-lg">
-            Witness precision agriculture in action across Tamil Nadu and Indian agricultural belts.
-          </p>
-        </div>
-
-        {/* Cinematic Feature Card */}
-        <div className="relative rounded-3xl overflow-hidden border border-emerald-500/30 shadow-2xl bg-stone-950">
-          {/* Main Visual Image */}
-          <div className="relative h-[380px] sm:h-[500px] lg:h-[580px] w-full">
+        {/* Full Width Visual Storytelling Card */}
+        <div className="relative rounded-3xl overflow-hidden border border-emerald-500/30 bg-stone-950 shadow-2xl">
+          {/* Main Background Image */}
+          <div className="relative h-[480px] sm:h-[520px] md:h-[580px] w-full">
             <img
               src="/images/farmer-action.jpg"
-              alt="Indian farmer watching drone spraying over lush green paddy fields"
-              className="w-full h-full object-cover object-center filter brightness-[0.8] saturate-[1.2]"
+              alt="Indian farmer watching high-precision agricultural drone spray in Tamil Nadu paddy farmland"
+              className="w-full h-full object-cover object-center filter brightness-[0.55]"
             />
-            {/* Cinematic Gradient Overlays */}
+            {/* Gradients */}
             <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-stone-950/90 via-stone-950/40 to-transparent" />
 
@@ -47,46 +30,51 @@ export function DroneInAction({ onOpenBooking }: DroneInActionProps) {
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <button
-                  onClick={onOpenBooking}
-                  className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-xl transition-all cursor-pointer flex items-center gap-2"
+                <a
+                  href="https://wa.me/919080369667?text=Hello%20Shamuga%20Farm%20Service,%20I%20want%20to%20know%20more%20about%20field%20spraying%20flights."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-xl transition-all flex items-center gap-2"
                 >
-                  <span>Request a Field Flight</span>
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Chat on WhatsApp</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
+                </a>
 
                 <a
                   href="tel:9080369667"
                   className="px-5 py-3 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-stone-200 font-semibold text-xs sm:text-sm border border-stone-700 backdrop-blur-md transition-colors flex items-center gap-2"
                 >
                   <Phone className="w-4 h-4 text-emerald-400" />
-                  <span>Call Pilot: 9080369667</span>
+                  <span>Direct Call: 9080369667</span>
                 </a>
               </div>
             </div>
-          </div>
 
-          {/* Quick Metrics Bar Under Image */}
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-800 bg-stone-950/90 border-t border-stone-800 p-4 sm:p-6 text-center">
-            <div className="p-3">
-              <p className="text-xs text-stone-400 uppercase tracking-wider font-semibold">Typical Speed</p>
-              <p className="text-xl sm:text-2xl font-black text-white mt-1">~6-8 Mins</p>
-              <p className="text-[11px] text-emerald-400 mt-0.5">Per Single Acre</p>
-            </div>
-            <div className="p-3">
-              <p className="text-xs text-stone-400 uppercase tracking-wider font-semibold">Water Requirement</p>
-              <p className="text-xl sm:text-2xl font-black text-white mt-1">10-12 Litres</p>
-              <p className="text-[11px] text-emerald-400 mt-0.5">Vs 150-200L Manual</p>
-            </div>
-            <div className="p-3">
-              <p className="text-xs text-stone-400 uppercase tracking-wider font-semibold">Farmer Safety</p>
-              <p className="text-xl sm:text-2xl font-black text-white mt-1">100% Remote</p>
-              <p className="text-[11px] text-emerald-400 mt-0.5">Zero Chemical Inhaled</p>
-            </div>
-            <div className="p-3">
-              <p className="text-xs text-stone-400 uppercase tracking-wider font-semibold">Terrain Limit</p>
-              <p className="text-xl sm:text-2xl font-black text-white mt-1">Zero Limits</p>
-              <p className="text-[11px] text-emerald-400 mt-0.5">Water, Mud, Tall Stalks</p>
+            {/* Floating Live Metric Overlay */}
+            <div className="hidden md:block absolute top-8 right-8 bg-stone-950/85 backdrop-blur-md p-5 rounded-2xl border border-stone-800 space-y-3 max-w-xs shadow-xl">
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                Field Performance Log
+              </div>
+              <div className="space-y-2 text-xs text-stone-300">
+                <div className="flex justify-between border-b border-stone-800 pb-1.5">
+                  <span className="text-stone-400">Target Speed:</span>
+                  <span className="font-semibold text-white">4.5 m/s</span>
+                </div>
+                <div className="flex justify-between border-b border-stone-800 pb-1.5">
+                  <span className="text-stone-400">Altitude above canopy:</span>
+                  <span className="font-semibold text-white">1.8 - 2.2 meters</span>
+                </div>
+                <div className="flex justify-between border-b border-stone-800 pb-1.5">
+                  <span className="text-stone-400">Time per acre:</span>
+                  <span className="font-semibold text-emerald-400">6.5 Minutes</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Pilot certification:</span>
+                  <span className="font-semibold text-white">DGCA Qualified</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

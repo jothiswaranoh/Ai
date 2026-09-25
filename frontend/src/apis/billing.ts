@@ -2,6 +2,7 @@ import { client } from './client';
 
 export interface BillingResponse {
     _id: string;
+    id?: string;
     farmer_id: string;
     farmer_name?: string;
     farmer_number?: string;
@@ -19,19 +20,32 @@ export interface BillingResponse {
 
 export interface BillingCreate {
     farmer_id: string;
-    operator_id: string;
-    drone_id: string;
-    acres: number;
-    time: number;
+    operator_id?: string;
+    drone_id?: string;
+    acres?: number;
+    time?: number | string;
     amount: number;
     mode_type: 'cash' | 'upi';
 }
 
+function normalizeBill(bill: any): BillingResponse {
+    if (!bill) return bill;
+    const resolvedId = bill._id || bill.id;
+    return {
+        ...bill,
+        _id: resolvedId,
+        id: resolvedId,
+    };
+}
+
 export const billsApi = {
-    create: (data: BillingCreate) => client('/billing/', { body: data }),
+    create: async (data: BillingCreate): Promise<BillingResponse> => {
+        const response = await client<BillingResponse>('/billing/', { body: data });
+        return normalizeBill(response);
+    },
 
     // Get all bills (with optional filtering)
-    getAll: (filters?: { farmer_id?: string; operator_id?: string; drone_id?: string }) => {
+    getAll: async (filters?: { farmer_id?: string; operator_id?: string; drone_id?: string }): Promise<BillingResponse[]> => {
         const params = new URLSearchParams();
         if (filters) {
             if (filters.farmer_id) params.append('farmer_id', filters.farmer_id);
@@ -39,10 +53,14 @@ export const billsApi = {
             if (filters.drone_id) params.append('drone_id', filters.drone_id);
         }
         const queryString = params.toString();
-        return client(`/billing/${queryString ? `?${queryString}` : ''}`);
+        const response = await client<BillingResponse[]>(`/billing/${queryString ? `?${queryString}` : ''}`);
+        return (response || []).map(normalizeBill);
     },
 
-    getById: (id: string) => client(`/billing/${id}`),
+    getById: async (id: string): Promise<BillingResponse> => {
+        const response = await client<BillingResponse>(`/billing/${id}`);
+        return normalizeBill(response);
+    },
 
     update: (id: string, data: Partial<BillingCreate>) => client(`/billing/${id}`, {
         method: 'PUT',

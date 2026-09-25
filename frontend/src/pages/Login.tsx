@@ -4,6 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { Lock, Mail, Eye, EyeOff, ArrowLeft, Home, ShieldCheck } from 'lucide-react';
 import { DroneIcon } from '../components/Landing/DroneIcon';
 
+import { isTokenExpired, TOKEN_KEY } from '../lib/authUtils';
+
 export function Login() {
   const navigate = useNavigate();
   const { login, user } = useAuth();
@@ -12,9 +14,20 @@ export function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [sessionExpiredMsg, setSessionExpiredMsg] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('expired')) {
+        setSessionExpiredMsg(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (user && !isTokenExpired(token)) {
       if (user.role === 'admin') {
         navigate('/admin', { replace: true });
       } else {
@@ -98,6 +111,13 @@ export function Login() {
         {/* Login Form Card */}
         <div className="bg-stone-900/85 backdrop-blur-2xl rounded-3xl shadow-2xl border border-stone-800/90 p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Session Expired Message */}
+            {sessionExpiredMsg && !error && (
+              <div className="bg-amber-500/15 border border-amber-500/30 text-amber-200 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium">
+                Your session has expired. Please sign in again to continue.
+              </div>
+            )}
+
             {/* Error Message */}
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 text-red-200 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium animate-shake">

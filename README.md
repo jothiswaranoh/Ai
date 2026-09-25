@@ -196,7 +196,7 @@ Both the UI and API packages are updated to the latest compatible versions:
    DB_NAME=shamuga_drone_dev
    JWT_SECRET_KEY=super-secret-jwt-key-for-development-min-32-chars
    JWT_ALGORITHM=HS256
-   JWT_EXPIRE_MINUTES=60
+   JWT_EXPIRE_MINUTES=10080  # 7 days
    ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
    ```
    *(Note: Both `MONGO_URL` and `MONGO_URI` are supported).*

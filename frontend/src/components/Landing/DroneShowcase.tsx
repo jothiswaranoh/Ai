@@ -1,96 +1,86 @@
 import { useState } from 'react';
-import { Target, Compass, BatteryCharging, ShieldAlert, Cpu, Droplet, Layers, CheckCircle } from 'lucide-react';
+import { Cpu, Droplet, Gauge, Wind, BatteryCharging, Phone } from 'lucide-react';
 
-interface DroneShowcaseProps {
-  onOpenBooking: () => void;
-}
-
-export function DroneShowcase({ onOpenBooking }: DroneShowcaseProps) {
-  const [activeCallout, setActiveCallout] = useState<number>(0);
+export function DroneShowcase() {
+  const [activeCallout, setActiveCallout] = useState(0);
 
   const features = [
     {
-      id: 0,
-      title: 'Large Chemical Spray Tank',
-      desc: 'High-capacity fluid container with anti-slosh baffles and quick-fill filtering system for seamless agro-chemical refill.',
-      icon: Droplet,
-      tag: 'Payload',
-      badge: 'Heavy Capacity',
-    },
-    {
-      id: 1,
+      id: 'nozzle',
       title: 'Centrifugal Atomizing Nozzles',
-      desc: 'Produces fine, uniform micron mist that blankets crops without large droplet runoff, ensuring maximum leaf absorption.',
-      icon: Layers,
-      tag: 'Spray Bar',
-      badge: 'Micro-Droplets',
+      desc: 'Generates ultra-fine micron mist droplets ensuring uniform adherence on crop canopy with zero chemical drip wastage.',
+      badge: 'Precision Tech',
+      icon: Droplet,
     },
     {
-      id: 2,
-      title: 'GPS-Enabled Autonomous Navigation',
-      desc: 'Real-time satellite positioning guides the drone along programmed flight paths, maintaining exact row spacing and speed.',
-      icon: Compass,
-      tag: 'Avionics',
-      badge: 'Centimeter Precision',
+      id: 'radar',
+      title: 'Terrain-Following Spherical Radar',
+      desc: 'Millimeter-wave radar automatically contours over hilly tea, banana, or uneven terraced paddy fields keeping optimal spray height.',
+      badge: 'Safety First',
+      icon: Gauge,
     },
     {
-      id: 3,
-      title: 'Real-Time Obstacle Sensing',
-      desc: 'Active radar and sensors detect trees, electric lines, and boundary posts, automatically maintaining safe clearance.',
-      icon: ShieldAlert,
-      tag: 'Safety Radar',
-      badge: '360° Detection',
+      id: 'propwash',
+      title: 'Aerodynamic Downward Wind Wash',
+      desc: 'Powerful propeller downdraft penetrates dense sugarcane and cotton foliage, thoroughly coating underside pest habitats.',
+      badge: 'Deep Coverage',
+      icon: Wind,
     },
     {
-      id: 4,
-      title: 'High-Discharge Smart Batteries',
-      desc: 'Engineered for quick swapping in the field, minimizing idle downtime during morning and evening spraying windows.',
+      id: 'battery',
+      title: 'Smart Swappable Power Packs',
+      desc: 'Quick battery exchange cycle provides continuous non-stop field operation across large agricultural tracts.',
+      badge: 'High Endurance',
       icon: BatteryCharging,
-      tag: 'Power System',
-      badge: 'Rapid Field Swap',
     },
     {
-      id: 5,
-      title: 'Downwash Airflow Penetration',
-      desc: 'Powerful downward aerodynamic wind from heavy propellers drives the spray mist deep into dense root canopies.',
-      icon: Target,
-      tag: 'Aerodynamics',
-      badge: 'Deep Reach',
+      id: 'gps',
+      title: 'RTK Sub-Centimeter Autonomous Flight',
+      desc: 'Pre-programmed flight paths prevent overlap spraying and ensure not a single square yard of your field is skipped.',
+      badge: 'Auto Flight',
+      icon: Cpu,
     },
   ];
 
   return (
-    <section id="drone-showcase" className="py-24 bg-stone-950 relative overflow-hidden border-t border-b border-stone-800">
-      {/* Background Lighting Glows */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-emerald-600/10 rounded-full blur-[140px] pointer-events-none" />
-
+    <section id="drone-showcase" className="py-24 bg-stone-950 relative overflow-hidden border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3.5 py-1.5 rounded-full border border-emerald-500/30">
-            Engineered For Agriculture
-          </span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs sm:text-sm font-bold uppercase tracking-wider">
+            <Cpu className="w-4 h-4 text-emerald-400" />
+            Industrial Grade Aviation
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Commercial Heavy-Duty <span className="text-emerald-400">Spraying Drones</span>
+            Advanced Agricultural <span className="text-emerald-400">Drone Specifications</span>
           </h2>
           <p className="text-stone-300 text-base sm:text-lg">
-            Built specifically for rugged farm conditions, wide crop canopies, and demanding agricultural spraying operations.
+            Commercial-grade agricultural drones engineered for rugged Indian terrain, all weather resilience, and maximum spraying productivity.
           </p>
         </div>
 
-        {/* 3D Visual & Interactive Callouts Grid */}
+        {/* Interactive 3D Showcase Presentation */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Main 3D Drone Product Photography */}
+          {/* Main Visual Display (Left Side) */}
           <div className="lg:col-span-7 relative group">
-            <div className="relative rounded-3xl overflow-hidden bg-stone-900/60 border border-emerald-500/30 shadow-2xl p-4 sm:p-6 backdrop-blur-md">
+            {/* Ambient Back Glow */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-600/20 via-green-500/10 to-transparent rounded-3xl blur-2xl group-hover:blur-3xl transition-all pointer-events-none" />
+
+            <div className="relative rounded-3xl overflow-hidden border border-emerald-500/30 bg-stone-900 shadow-2xl">
               <img
                 src="/images/drone-3d.jpg"
-                alt="3D product render of agricultural spraying drone with spray nozzles"
-                className="w-full h-auto object-contain max-h-[460px] mx-auto filter drop-shadow-[0_20px_40px_rgba(16,185,129,0.25)] transition-transform duration-500 group-hover:scale-[1.02]"
+                alt="3D Technical rendering of high-capacity agriculture spraying drone"
+                className="w-full h-auto object-cover filter contrast-105"
               />
 
-              {/* Live Overlay Feature Pill */}
-              <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-stone-950/85 backdrop-blur-xl border border-emerald-500/30 flex items-center justify-between">
+              {/* Status Floating Pill */}
+              <div className="absolute top-4 left-4 bg-stone-950/85 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-stone-800 flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-bold text-white tracking-wide">DGCA Standard Compliant</span>
+              </div>
+
+              {/* Quick Technical Specs Overlay Bar */}
+              <div className="absolute bottom-4 left-4 right-4 bg-stone-950/90 backdrop-blur-xl p-4 rounded-2xl border border-emerald-500/30 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
                     <Droplet className="w-5 h-5" />
@@ -100,12 +90,13 @@ export function DroneShowcase({ onOpenBooking }: DroneShowcaseProps) {
                     <p className="text-xs text-emerald-400">Multiple atomizing nozzles • Wide coverage swath</p>
                   </div>
                 </div>
-                <button
-                  onClick={onOpenBooking}
-                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors cursor-pointer"
+                <a
+                  href="tel:9080369667"
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors flex items-center gap-1.5"
                 >
-                  Book Field Spray
-                </button>
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>Call Specialist</span>
+                </a>
               </div>
             </div>
           </div>
@@ -163,12 +154,14 @@ export function DroneShowcase({ onOpenBooking }: DroneShowcaseProps) {
               Our certified operators bring all equipment, batteries, and calibrated drones directly to your farmland.
             </p>
           </div>
-          <button
-            onClick={onOpenBooking}
-            className="flex-shrink-0 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-extrabold text-sm shadow-xl hover:scale-105 transition-all cursor-pointer"
+          <a
+            href="https://wa.me/919080369667?text=Hello%20Shamuga%20Farm%20Service,%20I%20would%20like%20to%20know%20more%20about%20drone%20spraying."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-extrabold text-sm shadow-xl hover:scale-105 transition-all"
           >
-            Schedule a Drone Visit
-          </button>
+            Connect With Us
+          </a>
         </div>
       </div>
     </section>

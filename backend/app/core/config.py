@@ -21,7 +21,7 @@ class Settings(BaseSettings):
         description="JWT signing secret — must be at least 32 characters",
     )
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 60
+    JWT_EXPIRE_MINUTES: int = 10080  # 7 days (7 * 24 * 60 minutes)
 
     # ─── CORS ─────────────────────────────────────────────────────────────────
     ALLOWED_ORIGINS: str = (

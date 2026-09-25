@@ -1,6 +1,7 @@
-import { createContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { User } from '../lib/mockData';
 import { authApi } from '../apis/auth';
+import { isTokenExpired, clearAuthSession, handleSessionExpired, STORAGE_KEY, TOKEN_KEY } from '../lib/authUtils';
 
 type AuthContextType = {
   user: User | null;
@@ -14,12 +15,14 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'shamuga_user';
-const TOKEN_KEY = 'token';
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const logout = useCallback(() => {
+    authApi.logout();
+    setUser(null);
+  }, []);
 
   useEffect(() => {
     // Check for existing session
@@ -27,14 +30,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = localStorage.getItem(TOKEN_KEY);
 
     if (userJson && token) {
-      try {
-        setUser(JSON.parse(userJson));
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(TOKEN_KEY);
+      if (isTokenExpired(token)) {
+        clearAuthSession();
+        setUser(null);
+      } else {
+        try {
+          setUser(JSON.parse(userJson));
+        } catch {
+          clearAuthSession();
+          setUser(null);
+        }
       }
+    } else {
+      clearAuthSession();
+      setUser(null);
     }
     setLoading(false);
+  }, []);
+
+  // Listen for auth-expired event, window focus, and cross-tab storage changes
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+    };
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === TOKEN_KEY || e.key === STORAGE_KEY) {
+        if (!e.newValue) {
+          setUser(null);
+        }
+      }
+    };
+
+    const checkTokenStatus = () => {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token && isTokenExpired(token)) {
+        handleSessionExpired();
+      }
+    };
+
+    window.addEventListener('auth:expired', handleAuthExpired);
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', checkTokenStatus);
+    const interval = setInterval(checkTokenStatus, 60000); // Check every minute
+
+    return () => {
+      window.removeEventListener('auth:expired', handleAuthExpired);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', checkTokenStatus);
+      clearInterval(interval);
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -48,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = data.user;
 
       // Normalize user data to match frontend User type
-      const user: User = {
+      const userObj: User = {
         id: userData.id,
         email: userData.email,
         full_name: userData.name,
@@ -57,9 +102,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updated_at: userData.updated_at || new Date().toISOString(),
       };
 
-      setUser(user);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
-      return { success: true, user };
+      setUser(userObj);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userObj));
+      return { success: true, user: userObj };
     } catch (err: any) {
       console.error("Login failed", err);
       return { success: false, error: err.detail || 'Invalid email or password' };
@@ -73,11 +118,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       return { success: false, error: err.detail || 'Registration failed' };
     }
-  };
-
-  const logout = () => {
-    authApi.logout();
-    setUser(null);
   };
 
   const isAdmin = user?.role === 'admin';

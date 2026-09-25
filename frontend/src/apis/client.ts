@@ -1,3 +1,5 @@
+import { TOKEN_KEY, isTokenExpired, handleSessionExpired } from '../lib/authUtils';
+
 const BASE_URL = (
     import.meta.env.VITE_API_URL ||
     import.meta.env.VITE_BASE_URL ||
@@ -10,7 +12,23 @@ type FetchOptions = Omit<RequestInit, 'body'> & {
 };
 
 export async function client<T = any>(endpoint: string, { body, ...customConfig }: FetchOptions = {}): Promise<T> {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(TOKEN_KEY);
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const isAuthEndpoint = normalizedEndpoint.startsWith('/auth/login') ||
+                           normalizedEndpoint.startsWith('/auth/register') ||
+                           normalizedEndpoint.startsWith('/auth/forgot-password') ||
+                           normalizedEndpoint.startsWith('/auth/reset-password');
+
+    // If an authenticated endpoint is being requested with an expired token, abort early and redirect
+    if (token && isTokenExpired(token) && !isAuthEndpoint) {
+        handleSessionExpired();
+        return Promise.reject({
+            detail: 'Session expired. Please log in again.',
+            message: 'Session expired. Please log in again.',
+            status: 401,
+        });
+    }
+
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
     };
@@ -32,8 +50,17 @@ export async function client<T = any>(endpoint: string, { body, ...customConfig 
         config.body = JSON.stringify(body);
     }
 
-    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-    const response = await fetch(`${BASE_URL}${normalizedEndpoint}`, config);
+    let response: Response;
+    try {
+        response = await fetch(`${BASE_URL}${normalizedEndpoint}`, config);
+    } catch (networkError: any) {
+        return Promise.reject({
+            detail: networkError?.message || 'Network error occurred. Please check your connection.',
+            message: networkError?.message || 'Network error occurred. Please check your connection.',
+            status: 0,
+        });
+    }
+
     let data: any;
     try {
         data = await response.json();
@@ -44,6 +71,11 @@ export async function client<T = any>(endpoint: string, { body, ...customConfig 
     if (response.ok) {
         return data;
     } else {
+        // If 401 Unauthorized occurs on an authenticated request, redirect to login
+        if (response.status === 401 && !normalizedEndpoint.startsWith('/auth/login')) {
+            handleSessionExpired();
+        }
+
         // Normalize FastAPI detail (which can be array of objects or string) into a friendly string
         let formattedDetail = 'An error occurred';
         if (typeof data.detail === 'string') {
@@ -78,4 +110,3 @@ client.get = <T = any>(endpoint: string, config?: FetchOptions) => client<T>(end
 client.post = <T = any>(endpoint: string, body?: any, config?: FetchOptions) => client<T>(endpoint, { ...config, method: 'POST', body });
 client.put = <T = any>(endpoint: string, body?: any, config?: FetchOptions) => client<T>(endpoint, { ...config, method: 'PUT', body });
 client.delete = <T = any>(endpoint: string, config?: FetchOptions) => client<T>(endpoint, { ...config, method: 'DELETE' });
-

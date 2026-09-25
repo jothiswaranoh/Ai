@@ -23,20 +23,31 @@ export interface FarmerUpdate {
     location?: string;
 }
 
+function normalizeFarmer(farmer: any): FarmerResponse {
+    if (!farmer) return farmer;
+    const resolvedId = farmer._id || farmer.id;
+    return {
+        ...farmer,
+        _id: resolvedId,
+        id: resolvedId,
+    };
+}
+
 export const farmersApi = {
-    getAll: async (search?: string) => {
+    getAll: async (search?: string): Promise<FarmerResponse[]> => {
         const query = search ? `?search=${encodeURIComponent(search)}` : '';
         const response = await client.get<FarmerResponse[]>(`/farmers/${query}`);
-        return response.map(f => ({ ...f, id: f._id || f.id }));
+        return (response || []).map(normalizeFarmer);
     },
 
-    getById: async (id: string) => {
+    getById: async (id: string): Promise<FarmerResponse> => {
         const response = await client.get<FarmerResponse>(`/farmers/${id}`);
-        return { ...response, id: response._id || response.id };
+        return normalizeFarmer(response);
     },
 
-    create: async (data: FarmerCreate) => {
-        return client.post<FarmerResponse>('/farmers/', data);
+    create: async (data: FarmerCreate): Promise<FarmerResponse> => {
+        const response = await client.post<FarmerResponse>('/farmers/', data);
+        return normalizeFarmer(response);
     },
 
     update: async (id: string, data: FarmerUpdate) => {

@@ -19,6 +19,20 @@ def _safe_object_id(value: str) -> ObjectId:
         )
 
 
+async def find_farmer_by_number(
+    number: str, db, exclude_id: Optional[str] = None
+) -> dict | None:
+    """Find farmer matching exact number."""
+    clean_number = number.strip()
+    query: dict = {"number": clean_number}
+    if exclude_id:
+        try:
+            query["_id"] = {"$ne": ObjectId(exclude_id)}
+        except Exception:
+            pass
+    return await _col(db).find_one(query)
+
+
 async def find_farmer_by_name_or_number(
     name: str, number: str, db, exclude_id: Optional[str] = None
 ) -> dict | None:

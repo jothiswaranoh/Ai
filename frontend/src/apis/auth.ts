@@ -1,5 +1,6 @@
 import { client } from './client';
-import { User } from '../lib/mockData'; // Using mockData User type for now, or we can define a shared type
+import { User } from '../lib/mockData';
+import { clearAuthSession } from '../lib/authUtils';
 
 export interface AuthResponse {
     access_token: string;
@@ -20,7 +21,6 @@ export const authApi = {
     resetPassword: (data: any) => client('/auth/reset-password', { body: data }),
     changePassword: (data: any) => client('/auth/change-password', { body: data }),
     logout: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('shamuga_user');
+        clearAuthSession();
     },
 };

@@ -1,7 +1,8 @@
 import { useState, useEffect, FormEvent } from 'react';
-import { Plus, User, Clock, DollarSign, FileText, CreditCard, Search, UserPlus, Check, Phone } from 'lucide-react';
+import { Plus, User, Clock, DollarSign, FileText, CreditCard, Search, UserPlus, Check, Phone, Shield } from 'lucide-react';
 import { billsApi } from '../../apis/billing';
 import { farmersApi, FarmerResponse } from '../../apis/farmers';
+import { usersApi, UserResponse } from '../../apis/users';
 import { useAuth } from '../../hooks/useAuth';
 
 interface BillFormProps {
@@ -16,6 +17,10 @@ export function BillForm({ onSuccess }: BillFormProps) {
   const [selectedFarmer, setSelectedFarmer] = useState<FarmerResponse | null>(null);
   const [farmerSearch, setFarmerSearch] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Operators state for admins
+  const [operators, setOperators] = useState<UserResponse[]>([]);
+  const [selectedOperatorId, setSelectedOperatorId] = useState('');
 
   // Quick Add Farmer modal state inside bill form
   const [showAddFarmerModal, setShowAddFarmerModal] = useState(false);
@@ -32,12 +37,24 @@ export function BillForm({ onSuccess }: BillFormProps) {
 
   useEffect(() => {
     loadFarmers();
-  }, []);
+    if (user?.role === 'admin') {
+      loadOperators();
+    }
+  }, [user]);
 
   const loadFarmers = async () => {
     try {
       const data = await farmersApi.getAll();
       setFarmers(data);
+    } catch {
+      // Ignore background error
+    }
+  };
+
+  const loadOperators = async () => {
+    try {
+      const data = await usersApi.getOperators();
+      setOperators(data);
     } catch {
       // Ignore background error
     }
@@ -91,13 +108,14 @@ export function BillForm({ onSuccess }: BillFormProps) {
     setLoading(true);
 
     try {
+      const resolvedOperatorId = selectedOperatorId || user?.id || (user as any)?._id || undefined;
       await billsApi.create({
         farmer_id: selectedFarmer.id || selectedFarmer._id || selectedFarmer.name,
         acres: formData.archs ? parseFloat(formData.archs) : 0,
         time: formData.time_duration || undefined,
         amount: parseFloat(formData.bill_amount),
         mode_type: formData.mode_type,
-        operator_id: user?.id,
+        operator_id: resolvedOperatorId,
       });
 
       // Reset form
@@ -108,6 +126,7 @@ export function BillForm({ onSuccess }: BillFormProps) {
         mode_type: 'cash',
       });
       setSelectedFarmer(null);
+      setSelectedOperatorId('');
       setFarmerSearch('');
 
       if (onSuccess) {
@@ -233,6 +252,28 @@ export function BillForm({ onSuccess }: BillFormProps) {
             <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
               Selected
             </span>
+          </div>
+        )}
+
+        {/* Operator Selector (Admin Only) */}
+        {user?.role === 'admin' && operators.length > 0 && (
+          <div className="space-y-1.5">
+            <label className="flex items-center gap-1.5 text-xs font-semibold text-stone-300 uppercase tracking-wider">
+              <Shield className="w-3.5 h-3.5 text-emerald-400" />
+              Assign Drone Pilot / Operator
+            </label>
+            <select
+              value={selectedOperatorId}
+              onChange={(e) => setSelectedOperatorId(e.target.value)}
+              className="w-full px-4 py-3 bg-stone-950/80 border border-stone-700/80 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+            >
+              <option value="">Logged in Admin ({user.full_name || user.email})</option>
+              {operators.map((op) => (
+                <option key={op.id || op._id} value={op.id || op._id}>
+                  {op.name} ({op.email})
+                </option>
+              ))}
+            </select>
           </div>
         )}
 

@@ -1,52 +1,33 @@
-import { XCircle, CheckCircle2, Clock, Users, ShieldAlert, ShieldCheck, Droplet, ArrowRight, Zap, Target } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, ShieldCheck, Clock, Users, Target } from 'lucide-react';
 
-interface ProblemSolutionProps {
-  onOpenBooking: () => void;
-}
-
-export function ProblemSolution({ onOpenBooking }: ProblemSolutionProps) {
+export function ProblemSolution() {
   const problems = [
     {
-      title: 'Heavy Manual Backpacks',
-      desc: 'Carrying 16-20 litre knapsack tanks under intense heat causes acute physical strain and exhaustion.',
-      icon: Users,
+      title: 'Scarcity of Agricultural Labour',
+      desc: 'Finding workers during peak monsoon and pest seasons is unpredictable, leading to missed spraying windows.',
     },
     {
-      title: 'Long, Exhausting Hours',
-      desc: 'Takes 4 to 6 hours of relentless walking per acre, delaying crucial pest treatment across larger farms.',
-      icon: Clock,
+      title: 'Slow & Exhausting Process',
+      desc: 'Manual knapsack spraying takes 1.5 to 2 hours per single acre under scorching sun, causing severe physical fatigue.',
     },
     {
-      title: 'Inaccessible & Muddy Terrain',
-      desc: 'Waterlogged paddy, tall sugarcane, and thorny crops are extremely difficult or impossible to spray manually.',
-      icon: XCircle,
+      title: 'Direct Toxic Exposure',
+      desc: 'Labourers carry chemical tanks on their backs, risking toxic skin absorption and long-term respiratory hazards.',
     },
     {
-      title: 'Uneven Droplet Spraying',
-      desc: 'Manual hand lances produce erratic droplet sizes, missing hidden pests under dense lower leaves.',
-      icon: Target,
+      title: 'Uneven Chemical Wastage',
+      desc: 'Handheld spray lances create uneven large droplets that pool on leaves and wash down to soil, wasting up to 40% chemical.',
     },
     {
-      title: 'High Labour Shortages',
-      desc: 'Dependence on finding available farm labourers during peak monsoon pest outbreaks causes crop loss.',
-      icon: Users,
-    },
-    {
-      title: 'Direct Chemical Exposure',
-      desc: 'Labourers and farmers constantly inhale toxic chemical vapors and suffer direct pesticide skin contact.',
-      icon: ShieldAlert,
+      title: 'Water Logged Mud Struggles',
+      desc: 'Walking through knee-deep sticky paddy mud or dense sugarcane crops breaks plant stalks and causes crop damage.',
     },
   ];
 
   const solutions = [
     {
-      title: 'Zero Physical Strain',
-      desc: 'The drone carries and disperses the entire payload automatically while farmers supervise from safe borders.',
-      icon: Zap,
-    },
-    {
-      title: 'Lightning-Fast Speed',
-      desc: 'Covers an entire acre in approximately 6 to 8 minutes, completing 20-30 acres in a single morning session.',
+      title: 'Fast Aerial Coverage',
+      desc: 'Sprays 1 complete acre in only 6-8 minutes, enabling rapid treatment before pests spread across fields.',
       icon: Clock,
     },
     {
@@ -60,7 +41,7 @@ export function ProblemSolution({ onOpenBooking }: ProblemSolutionProps) {
       icon: Target,
     },
     {
-      title: 'Instant On-Demand Booking',
+      title: 'Rapid On-Demand Dispatch',
       desc: 'One call or WhatsApp to 9080369667 dispatches our certified drone pilot directly to your field.',
       icon: Users,
     },
@@ -81,90 +62,84 @@ export function ProblemSolution({ onOpenBooking }: ProblemSolutionProps) {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-3.5 py-1.5 rounded-full border border-emerald-500/30">
-            The Agricultural Shift
+            Real Agricultural Comparison
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight">
-            Traditional Manual Spraying vs.{' '}
-            <span className="text-emerald-400">Drone Precision Spraying</span>
+            Traditional Manual Spraying vs <span className="text-emerald-400">Smart Drone Spraying</span>
           </h2>
           <p className="text-stone-300 text-base sm:text-lg">
-            Compare traditional farm spraying challenges with modern drone operations. See why thousands of Indian farmers are upgrading to drone services.
+            See why modern Indian farmers are retiring heavy knapsack sprayers in favor of automated aerial precision.
           </p>
         </div>
 
-        {/* Side-by-Side Comparison Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          {/* Traditional Manual Spraying Card (The Problem) */}
-          <div className="rounded-3xl p-6 sm:p-8 bg-stone-950/80 border border-red-500/30 shadow-2xl relative flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-stone-800">
+        {/* 2-Column Comparison Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+          {/* Left Column: Old Traditional Way (Problem) */}
+          <div className="bg-stone-950/80 border border-red-900/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/5 rounded-full blur-2xl pointer-events-none" />
+
+            <div>
+              <div className="flex items-center justify-between pb-6 border-b border-stone-800">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400">
+                  <div className="w-10 h-10 rounded-2xl bg-red-950/80 border border-red-500/30 flex items-center justify-center text-red-400">
                     <XCircle className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Traditional Manual Spraying</h3>
-                    <p className="text-xs text-red-400 font-medium">Outdated, Slow & Exhausting</p>
+                    <h3 className="text-xl font-bold text-white">Manual Spraying Method</h3>
+                    <p className="text-xs text-stone-400">Traditional knapsack sprayer approach</p>
                   </div>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-950/60 text-red-300 border border-red-800/40">
-                  Manual Knapsack
+                <span className="text-xs font-bold uppercase tracking-wider text-red-400 px-3 py-1 rounded-full bg-red-950/60 border border-red-500/30">
+                  Outdated
                 </span>
               </div>
 
-              <div className="space-y-4">
-                {problems.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={index}
-                      className="p-3.5 rounded-2xl bg-stone-900/60 border border-stone-800 flex items-start gap-3.5 hover:border-red-500/30 transition-colors"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-red-500/10 flex-shrink-0 flex items-center justify-center text-red-400 mt-0.5">
-                        <Icon className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-stone-200">{item.title}</h4>
-                        <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{item.desc}</p>
-                      </div>
+              <div className="mt-6 space-y-4">
+                {problems.map((item, index) => (
+                  <div key={index} className="flex items-start gap-3.5 p-3 rounded-2xl bg-stone-900/40 border border-stone-800/60">
+                    <div className="mt-0.5 text-red-400 shrink-0">
+                      <XCircle className="w-4 h-4" />
                     </div>
-                  );
-                })}
+                    <div>
+                      <h4 className="text-sm font-semibold text-stone-200">{item.title}</h4>
+                      <p className="text-xs text-stone-400 mt-0.5 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-stone-800 text-xs text-stone-400 text-center">
-              ⚠️ Incurs high chemical wastage, delays pest response, and strains farmer health.
+            <div className="mt-8 pt-4 border-t border-stone-800 text-xs text-stone-400 italic text-center">
+              Heavy physical strain • Crop damage from walking • High labour cost
             </div>
           </div>
 
-          {/* Drone Spraying Card (The Solution) */}
-          <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-emerald-950/50 to-stone-950/90 border-2 border-emerald-500/50 shadow-2xl shadow-emerald-950/40 relative flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-emerald-800/40">
+          {/* Right Column: Drone Spraying Method (Solution) */}
+          <div className="bg-gradient-to-b from-emerald-950/30 to-stone-950/90 border border-emerald-500/40 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div>
+              <div className="flex items-center justify-between pb-6 border-b border-emerald-900/40">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500 flex items-center justify-center text-stone-950 shadow-lg shadow-emerald-500/40">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Shamuga Drone Spraying</h3>
-                    <p className="text-xs text-emerald-400 font-medium">Fast, Uniform & Effortless</p>
+                    <h3 className="text-xl font-bold text-white">Shamuga Agri Drone Spraying</h3>
+                    <p className="text-xs text-emerald-300">Modern aerospace farming technology</p>
                   </div>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-300 px-3 py-1 rounded-full bg-emerald-950 border border-emerald-500/40">
                   Recommended
                 </span>
               </div>
 
-              <div className="space-y-4">
+              <div className="mt-6 space-y-4">
                 {solutions.map((item, index) => {
                   const Icon = item.icon;
                   return (
-                    <div
-                      key={index}
-                      className="p-3.5 rounded-2xl bg-stone-900/80 border border-emerald-500/20 flex items-start gap-3.5 hover:border-emerald-400/40 transition-colors shadow-sm"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex-shrink-0 flex items-center justify-center text-emerald-400 mt-0.5">
+                    <div key={index} className="flex items-start gap-3.5 p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-500/40 transition-colors">
+                      <div className="mt-0.5 p-1 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
                         <Icon className="w-4 h-4" />
                       </div>
                       <div>
@@ -178,13 +153,15 @@ export function ProblemSolution({ onOpenBooking }: ProblemSolutionProps) {
             </div>
 
             <div className="mt-6 pt-4 border-t border-emerald-800/40">
-              <button
-                onClick={onOpenBooking}
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold text-sm shadow-xl shadow-emerald-950 flex items-center justify-center gap-2 hover:scale-[1.01] transition-all cursor-pointer"
+              <a
+                href="https://wa.me/919080369667?text=Hello%20Shamuga%20Farm%20Service,%20I%20want%20to%20know%20more%20about%20drone%20spraying."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold text-sm shadow-xl shadow-emerald-950 flex items-center justify-center gap-2 hover:scale-[1.01] transition-all"
               >
-                Switch To Drone Spraying Today
+                <span>Contact Us on WhatsApp</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
             </div>
           </div>
         </div>

@@ -23,8 +23,10 @@ async def create_billing(
 ):
     """Create a new billing record."""
     now = datetime.now(timezone.utc)
+    operator_id = payload.operator_id or str(current_user["_id"])
     data = {
         **payload.model_dump(),
+        "operator_id": operator_id,
         "created_at": now,
         "updated_at": None,
         "created_by": str(current_user["_id"]),

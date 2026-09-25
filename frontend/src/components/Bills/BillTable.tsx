@@ -65,7 +65,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
               <th className="px-6 py-4 text-left text-xs font-semibold text-stone-300 uppercase tracking-wider">
                 Date
               </th>
-              {isAdmin && (
+              {(isAdmin || onView) && (
                 <th className="px-6 py-4 text-right text-xs font-semibold text-stone-300 uppercase tracking-wider">
                   Actions
                 </th>
@@ -122,7 +122,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                     {formatDate(bill.created_at)}
                   </span>
                 </td>
-                {isAdmin && (
+                {(isAdmin || onView) && (
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="flex justify-end gap-2">
                       {onView && (
@@ -134,7 +134,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                           <Eye className="w-4 h-4" />
                         </button>
                       )}
-                      {onEdit && (
+                      {isAdmin && onEdit && (
                         <button
                           onClick={() => onEdit(bill)}
                           className="p-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition-all cursor-pointer"
@@ -143,7 +143,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                           <Edit2 className="w-4 h-4" />
                         </button>
                       )}
-                      {onDelete && (
+                      {isAdmin && onDelete && (
                         <button
                           onClick={() => onDelete(bill)}
                           className="p-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 transition-all cursor-pointer"
@@ -210,7 +210,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
             </div>
 
             {/* Actions */}
-            {isAdmin && (
+            {(isAdmin || onView) && (
               <div className="flex justify-end gap-2 pt-3 border-t border-stone-800">
                 {onView && (
                   <button
@@ -221,7 +221,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                     <span>View</span>
                   </button>
                 )}
-                {onEdit && (
+                {isAdmin && onEdit && (
                   <button
                     onClick={() => onEdit(bill)}
                     className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-stone-800 text-stone-200 border border-stone-700 text-xs font-medium cursor-pointer"
@@ -230,7 +230,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
                     <span>Edit</span>
                   </button>
                 )}
-                {onDelete && (
+                {isAdmin && onDelete && (
                   <button
                     onClick={() => onDelete(bill)}
                     className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/30 text-xs font-medium cursor-pointer"

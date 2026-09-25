@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, MessageSquare, MapPin, Mail, ArrowUpRight, ShieldCheck, Heart } from 'lucide-react';
+import { Phone, MessageSquare, MapPin, ArrowUpRight, ShieldCheck, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { DroneIcon } from './DroneIcon';
 
@@ -101,7 +101,7 @@ export const Footer: React.FC = () => {
                   className="flex items-center gap-2.5 text-stone-200 hover:text-emerald-400 transition-colors group"
                 >
                   <MessageSquare className="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform" />
-                  <span className="font-mono font-medium">WhatsApp Booking</span>
+                  <span className="font-mono font-medium">WhatsApp Support</span>
                 </a>
               </li>
               <li className="pt-2">

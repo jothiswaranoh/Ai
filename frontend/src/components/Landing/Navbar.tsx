@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Phone, Menu, X, LogIn, LayoutDashboard } from 'lucide-react';
 import { DroneIcon } from './DroneIcon';
+import { useAuth } from '../../hooks/useAuth';
 
-interface NavbarProps {
-  onOpenBooking: () => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
+export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
             </div>
           </a>
 
-          {/* Desktop Navigation Links (with generous spacing) */}
+          {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center gap-7">
             {navLinks.map((link) => (
               <a
@@ -73,46 +71,57 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
           </nav>
 
           {/* Right Action CTAs */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          <div className="hidden sm:flex items-center gap-3">
             {/* Direct Phone Call */}
             <a
               href="tel:9080369667"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-stone-300 hover:text-white hover:bg-stone-800/80 transition-colors text-xs font-semibold border border-stone-800"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-stone-300 hover:text-white hover:bg-stone-800/80 transition-colors text-xs font-semibold border border-stone-800"
               title="Call Drone Specialist"
             >
               <Phone className="w-3.5 h-3.5 text-emerald-400" />
               <span className="font-mono">9080369667</span>
             </a>
 
-            {/* Book Drone Spraying */}
-            <button
-              onClick={onOpenBooking}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-950/60 hover:shadow-emerald-900/80 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-            >
-              <DroneIcon className="w-4 h-4 text-emerald-100" />
-              <span>Book Drone</span>
-            </button>
-
-            {/* Operator & Admin Portal Link */}
-            <Link
-              to="/login"
-              className="flex items-center gap-1 px-3 py-2 rounded-full bg-stone-900/80 hover:bg-stone-800 text-stone-300 hover:text-white text-xs font-medium border border-stone-800 transition-colors"
-              title="Operator & Admin Login"
-            >
-              <span>Portal</span>
-              <ArrowUpRight className="w-3 h-3 text-stone-400" />
-            </Link>
+            {/* Neat Clean Login / Dashboard Button */}
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow-md shadow-emerald-950/60 hover:shadow-emerald-900/80 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                title="Go to Dashboard"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard</span>
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-950/60 hover:shadow-emerald-900/80 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer border border-emerald-400/20"
+                title="Portal Login"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Right Buttons */}
           <div className="flex sm:hidden items-center gap-2">
-            <button
-              onClick={onOpenBooking}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold shadow-sm"
+            <Link
+              to={user ? "/dashboard" : "/login"}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 text-white text-xs font-bold shadow-sm"
             >
-              <DroneIcon className="w-3.5 h-3.5" />
-              <span>Book</span>
-            </button>
+              {user ? (
+                <>
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span>Dashboard</span>
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Login</span>
+                </>
+              )}
+            </Link>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-1.5 rounded-lg bg-stone-800/80 text-stone-300 hover:text-white border border-stone-700"
@@ -148,12 +157,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenBooking }) => {
                 Call: 9080369667
               </a>
               <Link
-                to="/login"
+                to={user ? "/dashboard" : "/login"}
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-stone-900 text-stone-300 text-xs font-medium border border-stone-800"
+                className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white text-xs font-bold shadow-md shadow-emerald-950 transition-all"
               >
-                <span>Staff & Admin Portal Login</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-stone-400" />
+                {user ? (
+                  <>
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Go to Dashboard</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-4 h-4" />
+                    <span>Login to Portal</span>
+                  </>
+                )}
               </Link>
             </div>
           </div>

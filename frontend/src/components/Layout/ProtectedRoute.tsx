@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
 import { ReactNode } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { isTokenExpired, handleSessionExpired, TOKEN_KEY } from '../../lib/authUtils';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
   const { user, loading, isAdmin } = useAuth();
+  const token = localStorage.getItem(TOKEN_KEY);
 
   if (loading) {
     return (
@@ -21,7 +23,10 @@ export function ProtectedRoute({ children, adminOnly = false }: ProtectedRoutePr
     );
   }
 
-  if (!user) {
+  if (!user || isTokenExpired(token)) {
+    if (token && isTokenExpired(token)) {
+      handleSessionExpired();
+    }
     return <Navigate to="/login" replace />;
   }
 

@@ -1,10 +1,10 @@
-import { ArrowRight, Phone, MessageSquare, ShieldCheck, Zap, Droplet, Users, Target, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Phone, MessageSquare, Zap, Droplet, Users, Target, CheckCircle2, LogIn, LayoutDashboard } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
-interface HeroSectionProps {
-  onOpenBooking: () => void;
-}
+export function HeroSection() {
+  const { user } = useAuth();
 
-export function HeroSection({ onOpenBooking }: HeroSectionProps) {
   const handleWhatsApp = () => {
     window.open('https://wa.me/919080369667?text=Hello%20Shamuga%20Farm%20Service%2C%20I%20would%20like%20to%20know%20more%20about%20your%20agriculture%20drone%20spraying%20service.', '_blank');
   };
@@ -85,13 +85,23 @@ export function HeroSection({ onOpenBooking }: HeroSectionProps) {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-              <button
-                onClick={onOpenBooking}
+              <Link
+                to={user ? "/dashboard" : "/login"}
                 className="flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-extrabold text-base shadow-2xl shadow-emerald-950 hover:shadow-emerald-900/60 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
               >
-                <span>Book Drone Spraying</span>
+                {user ? (
+                  <>
+                    <LayoutDashboard className="w-5 h-5" />
+                    <span>Go to Dashboard</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-5 h-5" />
+                    <span>Login to Portal</span>
+                  </>
+                )}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </Link>
 
               <button
                 onClick={handleWhatsApp}
@@ -170,12 +180,22 @@ export function HeroSection({ onOpenBooking }: HeroSectionProps) {
                 </div>
               </div>
 
-              <button
-                onClick={onOpenBooking}
-                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-colors cursor-pointer"
+              <Link
+                to={user ? "/dashboard" : "/login"}
+                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-colors flex items-center justify-center gap-2"
               >
-                Schedule Spraying For Your Land
-              </button>
+                {user ? (
+                  <>
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span>Open Management Dashboard</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="w-4 h-4" />
+                    <span>Operator & Admin Login</span>
+                  </>
+                )}
+              </Link>
             </div>
           </div>
         </div>

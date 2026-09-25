@@ -21,20 +21,12 @@ async def create_farmer(
     db=Depends(get_db),
 ):
     """Create a new farmer with duplicate validation."""
-    existing = await farmer_service.find_farmer_by_name_or_number(
-        payload.name, payload.number, db
-    )
+    existing = await farmer_service.find_farmer_by_number(payload.number, db)
     if existing:
-        if existing.get("number") == payload.number.strip():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"A farmer with phone number '{payload.number}' already exists.",
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"A farmer with name '{payload.name}' already exists.",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"A farmer with phone number '{payload.number}' already exists.",
+        )
 
     now = datetime.now(timezone.utc)
     data = {
@@ -87,7 +79,7 @@ async def get_farmer(
 async def update_farmer(
     farmer_id: str,
     payload: FarmerUpdate,
-    _: dict = Depends(get_current_active_user),
+    current_user: dict = Depends(get_current_active_user),
     db=Depends(get_db),
 ):
     """Update a farmer record."""
@@ -104,22 +96,15 @@ async def update_farmer(
             detail="No fields provided to update",
         )
 
-    check_name = update_data.get("name", farmer.get("name"))
-    check_number = update_data.get("number", farmer.get("number"))
-
-    existing = await farmer_service.find_farmer_by_name_or_number(
-        check_name, check_number, db, exclude_id=farmer_id
-    )
-    if existing:
-        if existing.get("number") == str(check_number).strip():
+    check_number = update_data.get("number")
+    if check_number:
+        existing = await farmer_service.find_farmer_by_number(
+            check_number, db, exclude_id=farmer_id
+        )
+        if existing:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Another farmer with phone number '{check_number}' already exists.",
-            )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Another farmer with name '{check_name}' already exists.",
             )
 
     update_data["updated_at"] = datetime.now(timezone.utc)

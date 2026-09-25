@@ -4,6 +4,7 @@ import { Plus, FileText, DollarSign, TrendingUp, Calendar, Sprout } from 'lucide
 import { Navbar } from '../components/Layout/Navbar';
 import { BillTable } from '../components/Bills/BillTable';
 import { BillForm } from '../components/Bills/BillForm';
+import { BillViewModal } from '../components/Bills/BillViewModal';
 import { BillingResponse, billsApi } from '../apis/billing';
 import { useAuth } from '../hooks/useAuth';
 
@@ -13,6 +14,7 @@ export function OperatorDashboard() {
   const [bills, setBills] = useState<BillingResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [viewingBill, setViewingBill] = useState<BillingResponse | null>(null);
 
   useEffect(() => {
     loadBills();
@@ -219,11 +221,19 @@ export function OperatorDashboard() {
                 <p className="text-xs mt-1">Click "Create New Bill" above to record your first farm spray job.</p>
               </div>
             ) : (
-              <BillTable bills={bills} />
+              <BillTable bills={bills} onView={(bill) => setViewingBill(bill)} />
             )}
           </div>
         </div>
       </div>
+
+      {/* View Bill Modal */}
+      {viewingBill && (
+        <BillViewModal
+          bill={viewingBill}
+          onClose={() => setViewingBill(null)}
+        />
+      )}
 
       {/* Create Bill Modal */}
       {createModalOpen && (

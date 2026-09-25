@@ -87,7 +87,7 @@ DB_NAME=shamuga_drone_dev
 # Security (minimum 32 characters for production)
 JWT_SECRET_KEY=super-secret-jwt-key-for-development-min-32-chars
 JWT_ALGORITHM=HS256
-JWT_EXPIRE_MINUTES=60
+JWT_EXPIRE_MINUTES=10080  # 7 days
 
 # Allowed CORS origins (comma-separated list)
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
