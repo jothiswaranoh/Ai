@@ -24,7 +24,7 @@ import { BillViewModal } from '../components/Bills/BillViewModal';
 import { BillForm } from '../components/Bills/BillForm';
 import { FarmersList } from '../components/Farmers/FarmersList';
 import { UserManagement } from '../components/Users/UserManagement';
-import { BillingResponse, billsApi } from '../apis/billing';
+import { BillingResponse, BillingStatsResponse, billsApi } from '../apis/billing';
 import { theme } from '../theme';
 
 export function AdminDashboard() {
@@ -71,21 +71,46 @@ export function AdminDashboard() {
   const [createBillModalOpen, setCreateBillModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalBillsCount, setTotalBillsCount] = useState(0);
+  const [dashboardStats, setDashboardStats] = useState<BillingStatsResponse | null>(null);
 
   useEffect(() => {
-    loadBills();
+    loadBills(1);
   }, []);
 
-  const loadBills = async (showRefresh = false) => {
+  const loadBills = async (pageOrRefresh: number | boolean = 1, maybeRefresh = false) => {
+    let targetPage = 1;
+    let showRefresh = false;
+
+    if (typeof pageOrRefresh === 'number') {
+      targetPage = pageOrRefresh;
+      showRefresh = Boolean(maybeRefresh);
+    } else if (typeof pageOrRefresh === 'boolean') {
+      showRefresh = pageOrRefresh;
+      targetPage = 1;
+    }
+
     try {
       if (showRefresh) {
         setRefreshing(true);
       } else {
         setLoading(true);
       }
-      const data = await billsApi.getAll();
-      setBills(data);
-      setFilteredBills(data);
+      const [billsData, statsData] = await Promise.all([
+        billsApi.getAll({ page: targetPage, limit: 10 }),
+        billsApi.getStats().catch(() => null),
+      ]);
+      const items = billsData.items || [];
+      setBills(items);
+      setFilteredBills(items);
+      setCurrentPage(billsData.page || targetPage);
+      setTotalPages(billsData.total_pages || 1);
+      setTotalBillsCount(billsData.total || items.length);
+      if (statsData) {
+        setDashboardStats(statsData);
+      }
       setSearchQuery('');
     } catch (error) {
       console.error('Error loading bills:', error);
@@ -93,6 +118,15 @@ export function AdminDashboard() {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const handleBillCreated = async (createdBill?: BillingResponse) => {
+    if (createdBill) {
+      setBills((prev) => [createdBill, ...prev.filter((b) => (b._id || b.id) !== (createdBill._id || createdBill.id)).slice(0, 9)]);
+      setFilteredBills((prev) => [createdBill, ...prev.filter((b) => (b._id || b.id) !== (createdBill._id || createdBill.id)).slice(0, 9)]);
+      setTotalBillsCount((prev) => prev + 1);
+    }
+    await loadBills(1, true);
   };
 
   const handleFilterChange = useMemo(() => (filters: {
@@ -103,13 +137,17 @@ export function AdminDashboard() {
   }) => {
     let filtered = [...bills];
 
+    // Operator filter: compare against operator_name (what the dropdown passes)
     if (filters.operator) {
-      filtered = filtered.filter((bill) => bill.operator_id === filters.operator);
+      filtered = filtered.filter((bill) =>
+        (bill.operator_name || '').toLowerCase() === filters.operator.toLowerCase()
+      );
     }
 
+    // Farmer filter: compare against farmer_name (display name, not raw ID)
     if (filters.farmerName) {
       filtered = filtered.filter((bill) =>
-        bill.farmer_id.toLowerCase().includes(filters.farmerName.toLowerCase())
+        (bill.farmer_name || bill.farmer_id).toLowerCase().includes(filters.farmerName.toLowerCase())
       );
     }
 
@@ -138,9 +176,10 @@ export function AdminDashboard() {
       return;
     }
 
+    // Search against farmer_name (or fall back to farmer_id), farmer_number, and amount
     const filtered = bills.filter((bill) =>
-      bill.farmer_id.toLowerCase().includes(query) ||
-      bill._id.toLowerCase().includes(query) ||
+      (bill.farmer_name || bill.farmer_id).toLowerCase().includes(query) ||
+      (bill.farmer_number || '').toLowerCase().includes(query) ||
       bill.amount.toString().includes(query)
     );
     setFilteredBills(filtered);
@@ -179,14 +218,17 @@ export function AdminDashboard() {
   };
 
   const exportToCSV = () => {
-    const headers = ['ID', 'Farmer ID', 'Amount', 'Operator ID', 'Created At'];
+    const headers = ['Farmer Name', 'Farmer Phone', 'Acres', 'Duration (Hrs)', 'Amount (₹)', 'Payment Mode', 'Operator', 'Date'];
     const csvContent = [
       headers.join(','),
       ...filteredBills.map(bill => [
-        bill._id,
-        bill.farmer_id,
+        `"${bill.farmer_name || bill.farmer_id}"`,
+        bill.farmer_number || '',
+        bill.acres,
+        bill.time || '',
         bill.amount,
-        bill.operator_id,
+        bill.mode_type,
+        `"${bill.operator_name || bill.operator_id}"`,
         new Date(bill.created_at).toLocaleDateString()
       ].join(','))
     ].join('\n');
@@ -208,6 +250,17 @@ export function AdminDashboard() {
     const monthNames = ["January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"];
 
+    if (dashboardStats) {
+      return {
+        totalBills: dashboardStats.total_bills,
+        totalAmount: dashboardStats.total_revenue,
+        avgAmount: dashboardStats.avg_bill_amount || (dashboardStats.total_bills > 0 ? dashboardStats.total_revenue / dashboardStats.total_bills : 0),
+        monthlyIncome: dashboardStats.monthly_revenue || 0,
+        monthlyBillCount: dashboardStats.monthly_bills || 0,
+        currentMonthName: monthNames[currentMonth],
+      };
+    }
+
     const monthlyBills = bills.filter(bill => {
       const billDate = new Date(bill.created_at);
       return billDate.getMonth() === currentMonth && billDate.getFullYear() === currentYear;
@@ -217,21 +270,21 @@ export function AdminDashboard() {
     const monthlyBillCount = monthlyBills.length;
 
     return {
-      totalBills: filteredBills.length,
+      totalBills: totalBillsCount || filteredBills.length,
       totalAmount: filteredBills.reduce((sum, bill) => sum + bill.amount, 0),
       avgAmount: filteredBills.length > 0 ? filteredBills.reduce((sum, bill) => sum + bill.amount, 0) / filteredBills.length : 0,
       monthlyIncome,
       monthlyBillCount,
       currentMonthName: monthNames[currentMonth]
     };
-  }, [filteredBills, bills]);
+  }, [dashboardStats, totalBillsCount, filteredBills, bills]);
 
   const stats = [
     {
       icon: FileText,
       label: 'Total Bills',
       value: totalBills.toLocaleString('en-IN'),
-      sublabel: `${bills.length} total records`,
+      sublabel: `${totalBillsCount || totalBills} total records`,
       color: theme.colors.primary.cyan[400],
       bgColor: 'rgba(6, 182, 212, 0.15)',
     },
@@ -444,6 +497,7 @@ export function AdminDashboard() {
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   onView={handleView}
+                  disablePagination={true}
                 />
               </div>
             </div>
@@ -520,6 +574,13 @@ export function AdminDashboard() {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onView={handleView}
+                    pagination={{
+                      currentPage,
+                      totalPages,
+                      totalItems: totalBillsCount,
+                      pageSize: 10,
+                      onPageChange: (newPage) => loadBills(newPage),
+                    }}
                   />
                 )}
               </div>
@@ -592,19 +653,17 @@ export function AdminDashboard() {
       {/* Create Bill Modal */}
       {createBillModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="w-full max-w-xl my-8">
-            <div className="flex justify-end mb-2">
-              <button
-                onClick={() => setCreateBillModalOpen(false)}
-                className="text-stone-400 hover:text-white bg-stone-800 px-3 py-1.5 rounded-lg text-sm cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
+          <div className="w-full max-w-xl my-8 relative">
+            <button
+              onClick={() => setCreateBillModalOpen(false)}
+              className="absolute top-4 right-4 z-10 text-stone-400 hover:text-white bg-stone-800/90 hover:bg-stone-700 px-3 py-1.5 rounded-lg text-sm border border-stone-700 cursor-pointer transition-all"
+            >
+              ✕ Close
+            </button>
             <BillForm
-              onSuccess={() => {
+              onSuccess={(createdBill) => {
                 setCreateBillModalOpen(false);
-                loadBills(true);
+                handleBillCreated(createdBill);
               }}
             />
           </div>

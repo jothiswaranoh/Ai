@@ -2,11 +2,21 @@
 Shared schema utilities — PyObjectId type and password strength validator.
 """
 import re
-from typing import Annotated, Any
+from typing import Annotated, Any, Generic, List, TypeVar
 
 from bson import ObjectId
-from pydantic import GetJsonSchemaHandler
+from pydantic import BaseModel, GetJsonSchemaHandler
 from pydantic_core import core_schema
+
+T = TypeVar("T")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: List[T]
+    total: int
+    page: int
+    limit: int
+    total_pages: int
 
 
 # ─── MongoDB ObjectId ─────────────────────────────────────────────────────────

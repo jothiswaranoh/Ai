@@ -24,18 +24,23 @@ async def authenticate(email: str, password: str, db) -> dict:
             detail="This account has been deactivated",
         )
 
+    from app.dependencies import is_admin_user
+
     token = create_access_token({"sub": str(user["_id"]), "email": user["email"]})
-    role = "admin" if user.get("role_id") == UserRole.ADMIN else "operator"
+    is_admin = is_admin_user(user)
+    role = "admin" if is_admin else "operator"
+    role_id = 1 if is_admin else 2
+    user_name = user.get("name") or user.get("full_name") or user["email"].split("@")[0]
 
     return {
         "access_token": token,
         "token_type": "bearer",
         "user": {
             "id": str(user["_id"]),
-            "name": user["name"],
+            "name": user_name,
             "email": user["email"],
             "role": role,
-            "role_id": user["role_id"],
+            "role_id": role_id,
         },
     }
 

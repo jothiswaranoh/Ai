@@ -1,4 +1,5 @@
 import logging
+import math
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -6,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.database import get_db
 from app.dependencies import get_current_active_user
+from app.schemas.common import PaginatedResponse
 from app.schemas.farmers import FarmerCreate, FarmerResponse, FarmerUpdate
 from app.services import farmers as farmer_service
 
@@ -48,16 +50,38 @@ async def create_farmer(
     return record
 
 
-@router.get("/", response_model=list[FarmerResponse])
+@router.get("/", response_model=PaginatedResponse[FarmerResponse])
 async def list_farmers(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    skip: Optional[int] = Query(None, ge=0),
     search: Optional[str] = Query(None),
     _: dict = Depends(get_current_active_user),
     db=Depends(get_db),
 ):
-    """List all farmers with optional search query."""
-    return await farmer_service.get_all_farmers(db, skip=skip, limit=limit, search=search)
+    """List all farmers with pagination (default 10 per page, max 10 per page) and optional search query."""
+    # Enforce maximum 10 items per page
+    limit = min(limit, 10)
+
+    if skip is not None:
+        actual_page = (skip // limit) + 1
+        actual_skip = skip
+    else:
+        actual_page = page
+        actual_skip = (page - 1) * limit
+
+    records, total = await farmer_service.get_all_farmers(
+        db, skip=actual_skip, limit=limit, search=search
+    )
+    total_pages = math.ceil(total / limit) if total > 0 else 0
+
+    return {
+        "items": records,
+        "total": total,
+        "page": actual_page,
+        "limit": limit,
+        "total_pages": total_pages,
+    }
 
 
 @router.get("/{farmer_id}", response_model=FarmerResponse)

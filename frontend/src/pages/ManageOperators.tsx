@@ -3,12 +3,18 @@ import { UserPlus, Trash2, AlertCircle } from 'lucide-react';
 import { Navbar } from '../components/Layout/Navbar';
 import { Button } from '../components/UI/Button';
 import { Input } from '../components/UI/Input';
+import { Pagination } from '../components/UI/Pagination';
 import { MOCK_PASSWORD } from '../lib/mockData';
 import { usersApi, UserResponse } from '../apis/users';
 
 export function ManageOperators() {
   const [operators, setOperators] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalOperators, setTotalOperators] = useState(0);
+  const PAGE_SIZE = 10;
+
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -20,14 +26,17 @@ export function ManageOperators() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadOperators();
+    loadOperators(1);
   }, []);
 
-  const loadOperators = async () => {
+  const loadOperators = async (targetPage = page) => {
     try {
       setLoading(true);
-      const data = await usersApi.getOperators();
-      setOperators(data);
+      const res = await usersApi.getAll(targetPage, PAGE_SIZE, undefined, 2);
+      setOperators(res.items);
+      setTotalOperators(res.total);
+      setTotalPages(res.total_pages);
+      setPage(res.page);
     } catch (error) {
       console.error('Error loading operators:', error);
     } finally {
@@ -194,30 +203,47 @@ export function ManageOperators() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-800 text-sm">
-                    {operators.map((op) => (
-                      <tr key={op.id} className="hover:bg-stone-800/40 transition-colors">
-                        <td className="px-6 py-4 whitespace-nowrap font-medium text-white">{op.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-stone-300 font-mono text-xs">{op.email}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                            {op.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-stone-400 text-xs">{formatDate(op.created_at)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right">
-                          <button
-                            onClick={() => setDeleteId(op.id)}
-                            className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/15 transition-colors cursor-pointer"
-                            title="Delete Operator"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {operators.map((op) => {
+                      const opId = op.id || op._id;
+                      return (
+                        <tr key={opId} className="hover:bg-stone-800/40 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap font-medium text-white">{op.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-stone-300 font-mono text-xs">{op.email}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                              {op.role_id === 1 ? 'Admin' : 'Operator'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-stone-400 text-xs">{formatDate(op.created_at)}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right">
+                            <button
+                              onClick={() => setDeleteId(opId || null)}
+                              className="p-1.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/15 transition-colors cursor-pointer"
+                              title="Delete Operator"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
+            )}
+
+            {totalOperators > 0 && (
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={totalOperators}
+                pageSize={PAGE_SIZE}
+                onPageChange={(p) => {
+                  setPage(p);
+                  loadOperators(p);
+                }}
+                itemLabel="operators"
+              />
             )}
           </div>
         </div>

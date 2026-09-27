@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User } from '../../lib/mockData';
-import { usersApi } from '../../lib/api';
+import { usersApi, UserResponse } from '../../apis/users';
 import { Filter, User as UserIcon, Calendar, Search } from 'lucide-react';
 
 interface BillFiltersProps {
@@ -13,7 +12,7 @@ interface BillFiltersProps {
 }
 
 export function BillFilters({ onFilterChange }: BillFiltersProps) {
-  const [operators, setOperators] = useState<User[]>([]);
+  const [operators, setOperators] = useState<UserResponse[]>([]);
   const [filters, setFilters] = useState({
     operator: '',
     farmerName: '',

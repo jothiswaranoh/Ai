@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { useAuth } from './hooks/useAuth';
 import { ProtectedRoute } from './components/Layout/ProtectedRoute';
 import { Login } from './pages/Login';
@@ -19,8 +20,9 @@ function DashboardRouter() {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ToastProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -94,6 +96,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+  </ToastProvider>
   );
 }
 

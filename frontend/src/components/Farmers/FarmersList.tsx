@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { UserCheck, Plus, Search, Trash2, Edit3, Phone, MapPin, AlertCircle, RefreshCw, Sprout } from 'lucide-react';
 import { farmersApi, FarmerResponse } from '../../apis/farmers';
+import { Pagination } from '../UI/Pagination';
 
 export function FarmersList() {
   const [farmers, setFarmers] = useState<FarmerResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalFarmers, setTotalFarmers] = useState(0);
+  const PAGE_SIZE = 10;
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingFarmer, setEditingFarmer] = useState<FarmerResponse | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -19,14 +25,18 @@ export function FarmersList() {
   });
 
   useEffect(() => {
-    loadFarmers();
+    setPage(1);
+    loadFarmers(1);
   }, [search]);
 
-  const loadFarmers = async () => {
+  const loadFarmers = async (targetPage = page) => {
     try {
       setLoading(true);
-      const data = await farmersApi.getAll(search);
-      setFarmers(data);
+      const data = await farmersApi.getAll(search, targetPage, PAGE_SIZE);
+      setFarmers(data.items);
+      setTotalFarmers(data.total);
+      setTotalPages(data.total_pages);
+      setPage(data.page);
     } catch (err) {
       console.error('Failed to load farmers', err);
     } finally {
@@ -262,6 +272,20 @@ export function FarmersList() {
             </div>
           </>
         )}
+
+        {totalFarmers > 0 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalFarmers}
+            pageSize={PAGE_SIZE}
+            onPageChange={(p) => {
+              setPage(p);
+              loadFarmers(p);
+            }}
+            itemLabel="farmers"
+          />
+        )}
       </div>
 
       {/* Add / Edit Farmer Modal */}
@@ -296,12 +320,19 @@ export function FarmersList() {
                 <input
                   type="tel"
                   required
+                  minLength={10}
                   maxLength={10}
+                  pattern="[0-9]{10}"
                   placeholder="e.g. 9876543210"
                   value={formData.number}
                   onChange={(e) => setFormData({ ...formData, number: e.target.value.replace(/\D/g, '').slice(0, 10) })}
                   className="w-full px-4 py-2.5 bg-stone-950/80 border border-stone-700/80 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
                 />
+                {formData.number && formData.number.length < 10 && (
+                  <p className="text-xs text-rose-400 mt-1">
+                    ⚠ Please enter a valid 10-digit mobile number ({10 - formData.number.length} more digit{10 - formData.number.length !== 1 ? 's' : ''} needed)
+                  </p>
+                )}
               </div>
 
               <div>

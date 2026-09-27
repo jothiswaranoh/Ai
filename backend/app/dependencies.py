@@ -56,11 +56,26 @@ async def get_current_active_user(
     return current_user
 
 
+def is_admin_user(user: dict | None) -> bool:
+    """Return True if user has admin privileges across any role_id / role format."""
+    if not user:
+        return False
+    role_id = user.get("role_id")
+    if role_id in (UserRole.ADMIN, 1, "1"):
+        return True
+    if str(role_id).strip().lower() in ("admin", "administrator"):
+        return True
+    role = str(user.get("role", "")).strip().lower()
+    if role in ("admin", "administrator", "1"):
+        return True
+    return False
+
+
 async def admin_required(
     current_user: dict = Depends(get_current_active_user),
 ) -> dict:
     """Raise 403 if the authenticated user is not an admin."""
-    if current_user.get("role_id") != UserRole.ADMIN:
+    if not is_admin_user(current_user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required",

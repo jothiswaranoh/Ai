@@ -1,11 +1,15 @@
 import logging
+import math
 from datetime import datetime, timezone
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.database import get_db
 from app.core.security import hash_password
-from app.dependencies import admin_required, get_current_active_user
+from app.dependencies import admin_required, get_current_active_user, is_admin_user
 from app.enums import UserRole
+from app.schemas.common import PaginatedResponse
 from app.schemas.users import AdminResetPassword, UserCreate, UserResponse, UserUpdate, UserUpdateSelf
 from app.services import users as user_service
 
@@ -70,15 +74,39 @@ async def create_user(
     return await user_service.get_user_by_id(user_id, db)
 
 
-@router.get("/", response_model=list[UserResponse])
+@router.get("/", response_model=PaginatedResponse[UserResponse])
 async def list_users(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    skip: Optional[int] = Query(None, ge=0),
+    role_id: Optional[int] = Query(None),
+    search: Optional[str] = Query(None),
     _: dict = Depends(admin_required),
     db=Depends(get_db),
 ):
-    """List all users with pagination (admin only)."""
-    return await user_service.get_all_users(db, skip=skip, limit=limit)
+    """List all users with pagination (default 10 per page, max 10 per page, admin only)."""
+    # Enforce maximum 10 items per page
+    limit = min(limit, 10)
+
+    if skip is not None:
+        actual_page = (skip // limit) + 1
+        actual_skip = skip
+    else:
+        actual_page = page
+        actual_skip = (page - 1) * limit
+
+    records, total = await user_service.get_all_users(
+        db, skip=actual_skip, limit=limit, role_id=role_id, search=search
+    )
+    total_pages = math.ceil(total / limit) if total > 0 else 0
+
+    return {
+        "items": records,
+        "total": total,
+        "page": actual_page,
+        "limit": limit,
+        "total_pages": total_pages,
+    }
 
 
 @router.get("/{user_id}", response_model=UserResponse)
@@ -88,7 +116,7 @@ async def get_user(
     db=Depends(get_db),
 ):
     """Get a user by ID. Accessible by admins or the user themselves."""
-    is_admin = current_user.get("role_id") == UserRole.ADMIN
+    is_admin = is_admin_user(current_user)
     is_self = str(current_user["_id"]) == user_id
 
     if not (is_admin or is_self):
@@ -113,7 +141,7 @@ async def update_user(
     - Admins may change all fields (name, email, role_id, is_active).
     - Non-admins may only update their own name and email.
     """
-    is_admin = current_user.get("role_id") == UserRole.ADMIN
+    is_admin = is_admin_user(current_user)
     is_self = str(current_user["_id"]) == user_id
 
     if not (is_admin or is_self):

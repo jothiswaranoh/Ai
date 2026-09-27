@@ -42,9 +42,37 @@ class UserUpdateSelf(BaseModel):
 
 class UserResponse(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
-    name: str
+    name: str = Field(default="")
     email: EmailStr
-    role_id: int
-    is_active: bool
+    role_id: int = Field(default=2)
+    is_active: bool = Field(default=True)
+
+    @field_validator("name", mode="before")
+    @classmethod
+    def normalize_name(cls, v, info):
+        if v:
+            return str(v)
+        # Check if full_name was provided in MongoDB document
+        data = info.data if hasattr(info, "data") else {}
+        return str(data.get("full_name", "")) if data else ""
+
+    @field_validator("role_id", mode="before")
+    @classmethod
+    def normalize_role_id(cls, v):
+        if v is None:
+            return 2
+        if isinstance(v, int):
+            return v
+        v_str = str(v).strip().lower()
+        if v_str in ("1", "admin", "administrator"):
+            return 1
+        return 2
+
+    @field_validator("is_active", mode="before")
+    @classmethod
+    def normalize_is_active(cls, v):
+        if v is None:
+            return True
+        return bool(v)
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)

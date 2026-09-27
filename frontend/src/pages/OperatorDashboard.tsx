@@ -5,28 +5,41 @@ import { Navbar } from '../components/Layout/Navbar';
 import { BillTable } from '../components/Bills/BillTable';
 import { BillForm } from '../components/Bills/BillForm';
 import { BillViewModal } from '../components/Bills/BillViewModal';
-import { BillingResponse, billsApi } from '../apis/billing';
+import { BillingResponse, BillingStatsResponse, billsApi } from '../apis/billing';
 import { useAuth } from '../hooks/useAuth';
 
 export function OperatorDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [bills, setBills] = useState<BillingResponse[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [operatorStats, setOperatorStats] = useState<BillingStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewingBill, setViewingBill] = useState<BillingResponse | null>(null);
 
   useEffect(() => {
-    loadBills();
+    loadBills(1);
   }, [user]);
 
-  const loadBills = async () => {
+  const loadBills = async (page = 1) => {
     if (!user) return;
 
     try {
       setLoading(true);
-      const data = await billsApi.getAll({ operator_id: user.id });
-      setBills(data);
+      const [res, statsRes] = await Promise.all([
+        billsApi.getAll({ operator_id: user.id, page, limit: 10 }),
+        billsApi.getStats(user.id).catch(() => null),
+      ]);
+      setBills(res.items);
+      setCurrentPage(res.page || page);
+      setTotalPages(res.total_pages || 1);
+      setTotalCount(res.total || res.items.length);
+      if (statsRes) {
+        setOperatorStats(statsRes);
+      }
     } catch (error) {
       console.error('Error loading bills:', error);
     } finally {
@@ -35,9 +48,9 @@ export function OperatorDashboard() {
   };
 
   // Calculate operator stats
-  const totalBills = bills.length;
-  const totalRevenue = bills.reduce((sum, bill) => sum + bill.amount, 0);
-  const avgBillAmount = totalBills > 0 ? totalRevenue / totalBills : 0;
+  const totalBills = operatorStats?.total_bills ?? totalCount ?? bills.length;
+  const totalRevenue = operatorStats?.total_revenue ?? bills.reduce((sum, bill) => sum + bill.amount, 0);
+  const avgBillAmount = operatorStats?.avg_bill_amount ?? (totalBills > 0 ? totalRevenue / totalBills : 0);
 
   // Get current month stats
   const currentDate = new Date();
@@ -49,8 +62,8 @@ export function OperatorDashboard() {
     return billDate.getMonth() === currentMonth && billDate.getFullYear() === currentYear;
   });
 
-  const monthlyRevenue = monthlyBills.reduce((sum, bill) => sum + bill.amount, 0);
-  const monthlyBillCount = monthlyBills.length;
+  const monthlyRevenue = operatorStats?.monthly_revenue ?? monthlyBills.reduce((sum, bill) => sum + bill.amount, 0);
+  const monthlyBillCount = operatorStats?.monthly_bills ?? monthlyBills.length;
 
   const monthNames = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
@@ -221,7 +234,17 @@ export function OperatorDashboard() {
                 <p className="text-xs mt-1">Click "Create New Bill" above to record your first farm spray job.</p>
               </div>
             ) : (
-              <BillTable bills={bills} onView={(bill) => setViewingBill(bill)} />
+              <BillTable
+                bills={bills}
+                onView={(bill) => setViewingBill(bill)}
+                pagination={{
+                  currentPage,
+                  totalPages,
+                  totalItems: totalCount,
+                  pageSize: 10,
+                  onPageChange: (newPage) => loadBills(newPage),
+                }}
+              />
             )}
           </div>
         </div>
@@ -238,19 +261,21 @@ export function OperatorDashboard() {
       {/* Create Bill Modal */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-          <div className="w-full max-w-xl my-8">
-            <div className="flex justify-end mb-2">
-              <button
-                onClick={() => setCreateModalOpen(false)}
-                className="text-stone-400 hover:text-white bg-stone-800 px-3.5 py-1.5 rounded-xl text-sm border border-stone-700 cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
+          <div className="w-full max-w-xl my-8 relative">
+            <button
+              onClick={() => setCreateModalOpen(false)}
+              className="absolute top-4 right-4 z-10 text-stone-400 hover:text-white bg-stone-800/90 hover:bg-stone-700 px-3 py-1.5 rounded-xl text-sm border border-stone-700 cursor-pointer transition-all"
+            >
+              ✕ Close
+            </button>
             <BillForm
-              onSuccess={() => {
+              onSuccess={(createdBill) => {
                 setCreateModalOpen(false);
-                loadBills();
+                if (createdBill) {
+                  setBills((prev) => [createdBill, ...prev.filter((b) => (b._id || b.id) !== (createdBill._id || createdBill.id)).slice(0, 9)]);
+                  setTotalCount((prev) => prev + 1);
+                }
+                loadBills(1);
               }}
             />
           </div>

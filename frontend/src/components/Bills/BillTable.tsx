@@ -1,16 +1,41 @@
+import { useState, useEffect } from 'react';
 import { Edit2, Trash2, Eye } from 'lucide-react';
 import { BillingResponse } from '../../apis/billing';
 import { useAuth } from '../../hooks/useAuth';
+import { Pagination } from '../UI/Pagination';
 
 interface BillTableProps {
   bills: BillingResponse[];
   onEdit?: (bill: BillingResponse) => void;
   onDelete?: (bill: BillingResponse) => void;
   onView?: (bill: BillingResponse) => void;
+  pageSize?: number;
+  disablePagination?: boolean;
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    pageSize?: number;
+    onPageChange: (page: number) => void;
+  };
 }
 
-export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
+export function BillTable({
+  bills,
+  onEdit,
+  onDelete,
+  onView,
+  pageSize = 10,
+  disablePagination = false,
+  pagination,
+}: BillTableProps) {
   const { isAdmin } = useAuth();
+  const [internalPage, setInternalPage] = useState(1);
+
+  // Reset internal page when bills list changes (e.g. on search / filter)
+  useEffect(() => {
+    setInternalPage(1);
+  }, [bills.length]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -34,6 +59,27 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
       </div>
     );
   }
+
+  // Determine whether to use external or internal pagination
+  const usePagination = !disablePagination;
+  const isExternalPagination = !!pagination;
+
+  const currentPage = isExternalPagination ? pagination.currentPage : internalPage;
+  const effectivePageSize = isExternalPagination ? (pagination.pageSize || pageSize) : pageSize;
+  const totalItems = isExternalPagination ? pagination.totalItems : bills.length;
+  const totalPages = isExternalPagination ? pagination.totalPages : Math.ceil(bills.length / effectivePageSize);
+
+  const displayedBills = (usePagination && !isExternalPagination)
+    ? bills.slice((currentPage - 1) * effectivePageSize, currentPage * effectivePageSize)
+    : bills;
+
+  const handlePageChange = (page: number) => {
+    if (isExternalPagination) {
+      pagination.onPageChange(page);
+    } else {
+      setInternalPage(page);
+    }
+  };
 
   return (
     <>
@@ -73,7 +119,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-800">
-            {bills.map((bill) => (
+            {displayedBills.map((bill) => (
               <tr
                 key={bill._id}
                 className="hover:bg-stone-800/40 transition-colors"
@@ -163,7 +209,7 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-4">
-        {bills.map((bill) => (
+        {displayedBills.map((bill) => (
           <div
             key={bill._id}
             className="bg-stone-900/90 backdrop-blur-xl rounded-2xl p-5 border border-stone-800 hover:border-emerald-500/30 transition-all shadow-xl"
@@ -244,6 +290,20 @@ export function BillTable({ bills, onEdit, onDelete, onView }: BillTableProps) {
           </div>
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {usePagination && totalItems > 0 && (
+        <div className="rounded-2xl overflow-hidden border border-stone-800 mt-2">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={effectivePageSize}
+            onPageChange={handlePageChange}
+            itemLabel="bills"
+          />
+        </div>
+      )}
     </>
   );
 }

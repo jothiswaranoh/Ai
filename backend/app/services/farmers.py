@@ -67,17 +67,21 @@ async def get_farmer_by_id(farmer_id: str, db) -> dict | None:
 async def get_all_farmers(
     db,
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 10,
     search: Optional[str] = None,
-) -> list[dict]:
+) -> tuple[list[dict], int]:
     query = {}
     if search:
+        escaped = re.escape(search.strip())
         query["$or"] = [
-            {"name": {"$regex": search, "$options": "i"}},
-            {"number": {"$regex": search, "$options": "i"}},
+            {"name": {"$regex": escaped, "$options": "i"}},
+            {"number": {"$regex": escaped, "$options": "i"}},
+            {"location": {"$regex": escaped, "$options": "i"}},
         ]
+    total = await _col(db).count_documents(query)
     cursor = _col(db).find(query).sort("created_at", -1).skip(skip).limit(limit)
-    return await cursor.to_list(length=limit)
+    records = await cursor.to_list(length=limit)
+    return records, total
 
 
 async def update_farmer(farmer_id: str, data: dict, db) -> bool:

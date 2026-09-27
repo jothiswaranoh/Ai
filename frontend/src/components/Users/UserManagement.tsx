@@ -2,12 +2,18 @@ import { useState, useEffect } from 'react';
 import { Users, UserPlus, Search, Trash2, Edit3, Shield, CheckCircle, XCircle, RefreshCw, AlertCircle, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { usersApi, UserResponse } from '../../apis/users';
 import { DroneIcon } from '../Landing/DroneIcon';
-import { MOCK_PASSWORD } from '../../lib/mockData';
+import { Pagination } from '../UI/Pagination';
 
 export function UserManagement() {
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const PAGE_SIZE = 10;
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingUser, setEditingUser] = useState<UserResponse | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -30,19 +36,26 @@ export function UserManagement() {
     email: '',
     password: '',
     role_id: 2, // Default Operator
+    is_active: true, // Default active
   });
 
   useEffect(() => {
-    loadUsers();
-  }, []);
+    setPage(1);
+    loadUsers(1);
+  }, [search]);
 
-  const loadUsers = async () => {
+  const loadUsers = async (targetPage = page) => {
     try {
       setLoading(true);
-      const data = await usersApi.getAll();
-      setUsers(data);
-    } catch (err) {
+      setLoadError('');
+      const data = await usersApi.getAll(targetPage, PAGE_SIZE, search);
+      setUsers(data.items);
+      setTotalUsers(data.total);
+      setTotalPages(data.total_pages);
+      setPage(data.page);
+    } catch (err: any) {
       console.error('Failed to load users', err);
+      setLoadError(err.detail || err.message || 'Failed to load users. You may not have admin access yet — try refreshing the page.');
     } finally {
       setLoading(false);
     }
@@ -50,7 +63,7 @@ export function UserManagement() {
 
   const handleOpenAdd = () => {
     setEditingUser(null);
-    setFormData({ name: '', email: '', password: MOCK_PASSWORD, role_id: 2 });
+    setFormData({ name: '', email: '', password: '', role_id: 2, is_active: true });
     setError('');
     setShowAddModal(true);
   };
@@ -62,6 +75,7 @@ export function UserManagement() {
       email: user.email,
       password: '',
       role_id: user.role_id,
+      is_active: user.is_active,
     });
     setEditNewPassword('');
     setShowEditPassword(false);
@@ -111,24 +125,35 @@ export function UserManagement() {
       return;
     }
 
+    // Validate password on create
+    if (!editingUser && formData.password) {
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(formData.password)) {
+        setError('Password must be at least 8 characters and include uppercase, lowercase, and a number.');
+        return;
+      }
+    }
+
     setSubmitting(true);
 
     try {
       if (editingUser) {
+        // Send name, role_id, and is_active — NOT email (it's disabled)
         await usersApi.update(editingUser.id || editingUser._id!, {
           name: formData.name,
-          email: formData.email,
           role_id: formData.role_id,
+          is_active: formData.is_active,
         });
         // Also reset password if admin provided a new one
         if (editNewPassword.trim()) {
           await usersApi.resetPassword(editingUser.id || editingUser._id!, editNewPassword);
         }
       } else {
+        // Use Password123 as default if user leaves password blank (meets backend requirements)
+        const defaultPassword = 'Password123';
         await usersApi.create({
           name: formData.name,
           email: formData.email,
-          password: formData.password || MOCK_PASSWORD,
+          password: formData.password || defaultPassword,
           role_id: formData.role_id,
         });
       }
@@ -153,8 +178,8 @@ export function UserManagement() {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
+      (u.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (u.email || '').toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -172,7 +197,7 @@ export function UserManagement() {
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <button
-            onClick={() => loadUsers()}
+            onClick={() => loadUsers(page)}
             className="p-2 sm:p-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 transition-all cursor-pointer"
             title="Refresh Users"
           >
@@ -185,6 +210,37 @@ export function UserManagement() {
             <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
             Add New User
           </button>
+        </div>
+      </div>
+
+      {/* Role Stats Metric Badges */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="bg-stone-900/80 border border-stone-800 rounded-xl p-3.5 flex items-center justify-between shadow-md">
+          <div>
+            <p className="text-[11px] text-stone-400 uppercase font-semibold">Total Accounts</p>
+            <p className="text-xl font-bold text-white mt-0.5">{totalUsers || users.length}</p>
+          </div>
+          <div className="w-9 h-9 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <Users className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="bg-stone-900/80 border border-stone-800 rounded-xl p-3.5 flex items-center justify-between shadow-md">
+          <div>
+            <p className="text-[11px] text-stone-400 uppercase font-semibold">Administrators</p>
+            <p className="text-xl font-bold text-amber-400 mt-0.5">{users.filter((u) => u.role_id === 1).length}</p>
+          </div>
+          <div className="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <Shield className="w-4 h-4" />
+          </div>
+        </div>
+        <div className="bg-stone-900/80 border border-stone-800 rounded-xl p-3.5 flex items-center justify-between shadow-md col-span-2 sm:col-span-1">
+          <div>
+            <p className="text-[11px] text-stone-400 uppercase font-semibold">Flight Pilots (Operators)</p>
+            <p className="text-xl font-bold text-teal-400 mt-0.5">{users.filter((u) => u.role_id === 2).length}</p>
+          </div>
+          <div className="w-9 h-9 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <DroneIcon className="w-4 h-4" />
+          </div>
         </div>
       </div>
 
@@ -206,6 +262,17 @@ export function UserManagement() {
           <div className="py-16 text-center text-emerald-400">
             <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-sm font-medium">Loading user list...</p>
+          </div>
+        ) : loadError ? (
+          <div className="py-16 text-center text-rose-400 p-6 space-y-3">
+            <AlertCircle className="w-10 h-10 mx-auto text-rose-500" />
+            <p className="text-sm font-semibold text-rose-300">{loadError}</p>
+            <button
+              onClick={() => loadUsers(1)}
+              className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 border border-stone-700 text-xs font-semibold cursor-pointer"
+            >
+              Retry
+            </button>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="py-16 text-center text-stone-400">
@@ -385,6 +452,20 @@ export function UserManagement() {
             </div>
           </>
         )}
+
+        {totalUsers > 0 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalUsers}
+            pageSize={PAGE_SIZE}
+            onPageChange={(p) => {
+              setPage(p);
+              loadUsers(p);
+            }}
+            itemLabel="users"
+          />
+        )}
       </div>
 
       {/* Admin Reset Password Modal */}
@@ -482,7 +563,7 @@ export function UserManagement() {
       {/* Add / Edit User Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-          <div className="w-full max-w-md bg-stone-900 border border-stone-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5">
+          <div className="w-full max-w-md bg-stone-900 border border-stone-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-bold text-white">
               {editingUser ? 'Edit User Account' : 'Add New Portal User'}
             </h3>
@@ -494,6 +575,7 @@ export function UserManagement() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Full Name */}
               <div>
                 <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-1.5">Full Name *</label>
                 <input
@@ -506,32 +588,45 @@ export function UserManagement() {
                 />
               </div>
 
+              {/* Email — disabled when editing */}
               <div>
-                <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-1.5">Email Address *</label>
+                <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-1.5">
+                  Email Address *
+                  {editingUser && <span className="ml-2 text-stone-500 font-normal normal-case">(cannot be changed)</span>}
+                </label>
                 <input
                   type="email"
                   required
+                  disabled={!!editingUser}
                   placeholder="anand@shamuga.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-stone-950/80 border border-stone-700/80 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                  className={`w-full px-4 py-2.5 bg-stone-950/80 border border-stone-700/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono ${
+                    editingUser
+                      ? 'text-stone-500 cursor-not-allowed opacity-60 select-none'
+                      : 'text-white placeholder-stone-500'
+                  }`}
                 />
               </div>
 
+              {/* Password — only on Create */}
               {!editingUser && (
                 <div>
                   <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-1.5">Password</label>
                   <input
                     type="password"
-                    placeholder="Defaults to mock password"
+                    placeholder="Leave empty for default: Password123"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     className="w-full px-4 py-2.5 bg-stone-950/80 border border-stone-700/80 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
-                  <p className="text-[11px] text-stone-400 mt-1">Leave empty to use system default password.</p>
+                  <p className="text-[11px] text-stone-400 mt-1">
+                    Leave empty to use default <span className="font-mono text-stone-300">Password123</span>. Custom passwords must be 8+ chars with uppercase, lowercase &amp; a number.
+                  </p>
                 </div>
               )}
 
+              {/* Role */}
               <div>
                 <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-1.5">Assign Role *</label>
                 <select
@@ -544,7 +639,39 @@ export function UserManagement() {
                 </select>
               </div>
 
-              {/* Set New Password – only shown when editing an existing user */}
+              {/* Account Status toggle — visible in both Add and Edit */}
+              <div>
+                <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-2">Account Status</label>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, is_active: true })}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
+                      formData.is_active
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
+                        : 'bg-stone-800/60 border-stone-700 text-stone-400 hover:border-stone-600'
+                    }`}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Active
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, is_active: false })}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold transition-all cursor-pointer ${
+                      !formData.is_active
+                        ? 'bg-rose-500/20 border-rose-500/50 text-rose-300'
+                        : 'bg-stone-800/60 border-stone-700 text-stone-400 hover:border-stone-600'
+                    }`}
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Inactive
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-500 mt-1">Inactive accounts cannot log into the portal.</p>
+              </div>
+
+              {/* New Password (Edit only) */}
               {editingUser && (
                 <div className="pt-1">
                   <label className="text-xs font-semibold text-stone-300 uppercase tracking-wider block mb-1.5">
@@ -570,7 +697,7 @@ export function UserManagement() {
                   </div>
                   <p className="text-[11px] text-stone-400 mt-1 flex items-center gap-1">
                     <KeyRound className="w-3 h-3 text-amber-400 shrink-0" />
-                    Min. 8 characters. The operator will use this password immediately.
+                    Min. 8 characters with uppercase, lowercase &amp; a number. The user will use this immediately.
                   </p>
                 </div>
               )}

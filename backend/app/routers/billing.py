@@ -1,13 +1,15 @@
 import logging
+import math
 from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.database import get_db
-from app.dependencies import admin_required, get_current_active_user
+from app.dependencies import admin_required, get_current_active_user, is_admin_user
 from app.enums import UserRole
 from app.schemas.billing import BillingCreate, BillingResponse, BillingUpdate
+from app.schemas.common import PaginatedResponse
 from app.services import billing as billing_service
 
 logger = logging.getLogger(__name__)
@@ -40,10 +42,27 @@ async def create_billing(
     return record
 
 
-@router.get("/", response_model=list[BillingResponse])
+@router.get("/stats", response_model=dict)
+async def get_billing_stats(
+    operator_id: Optional[str] = Query(None),
+    current_user: dict = Depends(get_current_active_user),
+    db=Depends(get_db),
+):
+    """
+    Get aggregate billing metrics.
+    - Admins can get overall stats or filter by operator.
+    - Operators only get their own stats.
+    """
+    is_admin = is_admin_user(current_user)
+    scoped_operator_id = operator_id if is_admin else str(current_user["_id"])
+    return await billing_service.get_billing_stats(db, operator_id=scoped_operator_id)
+
+
+@router.get("/", response_model=PaginatedResponse[BillingResponse])
 async def list_billings(
-    skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=200),
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1),
+    skip: Optional[int] = Query(None, ge=0),
     farmer_id: Optional[str] = Query(None),
     operator_id: Optional[str] = Query(None),
     drone_id: Optional[str] = Query(None),
@@ -51,11 +70,14 @@ async def list_billings(
     db=Depends(get_db),
 ):
     """
-    List billing records.
+    List billing records with pagination (default 10 per page, max 10 per page).
     - **Admins** see all records and may filter by farmer, operator, or drone.
     - **Operators** see only their own records.
     """
-    is_admin = current_user.get("role_id") == UserRole.ADMIN
+    # Enforce maximum 10 items per page
+    limit = min(limit, 10)
+
+    is_admin = is_admin_user(current_user)
     filters: dict = {}
 
     if not is_admin:
@@ -70,7 +92,25 @@ async def list_billings(
     if drone_id:
         filters["drone_id"] = drone_id
 
-    return await billing_service.get_all_billings(db, skip=skip, limit=limit, filters=filters or None)
+    if skip is not None:
+        actual_page = (skip // limit) + 1
+        actual_skip = skip
+    else:
+        actual_page = page
+        actual_skip = (page - 1) * limit
+
+    records, total = await billing_service.get_all_billings(
+        db, skip=actual_skip, limit=limit, filters=filters or None
+    )
+    total_pages = math.ceil(total / limit) if total > 0 else 0
+
+    return {
+        "items": records,
+        "total": total,
+        "page": actual_page,
+        "limit": limit,
+        "total_pages": total_pages,
+    }
 
 
 @router.get("/{billing_id}", response_model=BillingResponse)
@@ -84,7 +124,7 @@ async def get_billing(
     if not record:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Billing record not found")
 
-    is_admin = current_user.get("role_id") == UserRole.ADMIN
+    is_admin = is_admin_user(current_user)
     is_owner = record.get("operator_id") == str(current_user["_id"])
 
     if not (is_admin or is_owner):
@@ -105,7 +145,7 @@ async def update_billing(
     if not record:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Billing record not found")
 
-    is_admin = current_user.get("role_id") == UserRole.ADMIN
+    is_admin = is_admin_user(current_user)
     is_owner = record.get("operator_id") == str(current_user["_id"])
 
     if not (is_admin or is_owner):
