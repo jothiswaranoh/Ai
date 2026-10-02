@@ -40,10 +40,10 @@ deactivate
 
 echo "🔄 Restarting Shamuga Drone API..."
 
-sudo supervisorctl restart shamuga-drone-api
+sudo supervisorctl restart shamuga-api
 
 echo "📊 Service status..."
 
-sudo supervisorctl status shamuga-drone-api
+sudo supervisorctl status shamuga-api
 
 echo "✅ Shamuga Drone deployment completed successfully"
