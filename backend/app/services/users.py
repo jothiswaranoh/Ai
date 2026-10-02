@@ -18,6 +18,12 @@ def _safe_object_id(value: str) -> ObjectId:
         )
 
 
+async def create_user(data: dict, db) -> str:
+    """Insert a new user document and return its string ID."""
+    result = await _col(db).insert_one(data)
+    return str(result.inserted_id)
+
+
 async def get_user_by_id(user_id: str, db) -> dict | None:
     """Return the user document (without password) or None."""
     user = await _col(db).find_one({"_id": _safe_object_id(user_id)})
