@@ -1,0 +1,579 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Background & Shadow Filters -->
+    <filter id="drone-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+    <filter id="glow-green" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="glow-red" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="rotor-blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="1.5" />
+    </filter>
+
+    <!-- Gradients -->
+    <!-- Arm Gradient -->
+    <linearGradient id="arm-grad-tl" x1="400" y1="400" x2="210" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="40%" stop-color="#334155" />
+      <stop offset="70%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="arm-grad-tr" x1="400" y1="400" x2="590" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="40%" stop-color="#334155" />
+      <stop offset="70%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="arm-grad-bl" x1="400" y1="400" x2="210" y2="590" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="40%" stop-color="#334155" />
+      <stop offset="70%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+    <linearGradient id="arm-grad-br" x1="400" y1="400" x2="590" y2="590" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="40%" stop-color="#334155" />
+      <stop offset="70%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <!-- Fuselage Body Gradient -->
+    <linearGradient id="fuselage-base" x1="400" y1="260" x2="400" y2="540" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="25%" stop-color="#0f172a" />
+      <stop offset="75%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="canopy-top" x1="400" y1="310" x2="400" y2="490" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="35%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Agri-Green Accents -->
+    <linearGradient id="accent-green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="accent-emerald" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6ee7b7" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+
+    <!-- Metallic Motor Gradients -->
+    <radialGradient id="motor-bell" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#475569" />
+      <stop offset="60%" stop-color="#1e293b" />
+      <stop offset="90%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+    <radialGradient id="motor-cap" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="70%" stop-color="#047857" />
+      <stop offset="100%" stop-color="#022c22" />
+    </radialGradient>
+    <radialGradient id="radar-dome" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="25%" stop-color="#0284c7" />
+      <stop offset="70%" stop-color="#0369a1" />
+      <stop offset="100%" stop-color="#082f49" />
+    </radialGradient>
+
+    <!-- Propeller Blade Carbon Gradient -->
+    <linearGradient id="prop-blade-h" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#090d16" stop-opacity="0.95" />
+      <stop offset="30%" stop-color="#1e293b" stop-opacity="0.9" />
+      <stop offset="70%" stop-color="#334155" stop-opacity="0.85" />
+      <stop offset="95%" stop-color="#10b981" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#34d399" stop-opacity="1" />
+    </linearGradient>
+
+    <!-- Rotor Swept Arc Gradient -->
+    <radialGradient id="rotor-disc">
+      <stop offset="70%" stop-color="#10b981" stop-opacity="0.0" />
+      <stop offset="90%" stop-color="#10b981" stop-opacity="0.08" />
+      <stop offset="97%" stop-color="#34d399" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
+    </radialGradient>
+
+    <!-- Skid/Landing Gear Gradient -->
+    <linearGradient id="skid-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#475569" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+
+  <!-- ================= BACKGROUND SHADOW & UNDERCARRIAGE ================= -->
+  <g id="drone-shadow-layer" opacity="0.4" filter="url(#drone-shadow)">
+    <!-- Main Center Shadow -->
+    <ellipse cx="400" cy="425" rx="90" ry="120" fill="#000000" />
+    <!-- Arm Shadows -->
+    <path d="M210,210 L590,590 M590,210 L210,590" stroke="#000000" stroke-width="26" stroke-linecap="round" />
+    <!-- Motor Pod Shadows -->
+    <circle cx="210" cy="225" r="42" fill="#000000" />
+    <circle cx="590" cy="225" r="42" fill="#000000" />
+    <circle cx="210" cy="605" r="42" fill="#000000" />
+    <circle cx="590" cy="605" r="42" fill="#000000" />
+  </g>
+
+  <!-- ================= LAYER 1: LANDING GEAR & SKIDS ================= -->
+  <g id="landing-gear">
+    <!-- Left Landing Skid -->
+    <rect x="294" y="190" width="12" height="420" rx="6" fill="url(#skid-grad)" stroke="#1e293b" stroke-width="1.5" />
+    <!-- Skid Front/Rear Curved Bumpers -->
+    <path d="M300,190 Q300,165 285,160" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round" />
+    <path d="M300,610 Q300,635 285,640" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round" />
+
+    <!-- Right Landing Skid -->
+    <rect x="494" y="190" width="12" height="420" rx="6" fill="url(#skid-grad)" stroke="#1e293b" stroke-width="1.5" />
+    <!-- Skid Front/Rear Curved Bumpers -->
+    <path d="M500,190 Q500,165 515,160" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round" />
+    <path d="M500,610 Q500,635 515,640" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round" />
+
+    <!-- Gear Struts connecting body to skids -->
+    <!-- Front-Left Strut -->
+    <line x1="365" y1="330" x2="300" y2="270" stroke="#1e293b" stroke-width="10" stroke-linecap="round" />
+    <line x1="365" y1="330" x2="300" y2="270" stroke="#475569" stroke-width="4" stroke-linecap="round" />
+    <!-- Rear-Left Strut -->
+    <line x1="365" y1="470" x2="300" y2="530" stroke="#1e293b" stroke-width="10" stroke-linecap="round" />
+    <line x1="365" y1="470" x2="300" y2="530" stroke="#475569" stroke-width="4" stroke-linecap="round" />
+    <!-- Front-Right Strut -->
+    <line x1="435" y1="330" x2="500" y2="270" stroke="#1e293b" stroke-width="10" stroke-linecap="round" />
+    <line x1="435" y1="330" x2="500" y2="270" stroke="#475569" stroke-width="4" stroke-linecap="round" />
+    <!-- Rear-Right Strut -->
+    <line x1="435" y1="470" x2="500" y2="530" stroke="#1e293b" stroke-width="10" stroke-linecap="round" />
+    <line x1="435" y1="470" x2="500" y2="530" stroke="#475569" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Rubber Skid Feet Pads -->
+    <rect x="290" y="255" width="20" height="15" rx="3" fill="#0f172a" />
+    <rect x="290" y="520" width="20" height="15" rx="3" fill="#0f172a" />
+    <rect x="490" y="255" width="20" height="15" rx="3" fill="#0f172a" />
+    <rect x="490" y="520" width="20" height="15" rx="3" fill="#0f172a" />
+  </g>
+
+  <!-- ================= LAYER 2: SPRAY TANK & ATOMIZER LINES ================= -->
+  <g id="spray-system">
+    <!-- Underbody Liquid Payload / Spray Tank -->
+    <rect x="350" y="320" width="100" height="160" rx="32" fill="#064e3b" stroke="#059669" stroke-width="2.5" />
+    <!-- Liquid Level Sight Window -->
+    <rect x="393" y="340" width="14" height="120" rx="7" fill="#022c22" stroke="#10b981" stroke-width="1" />
+    <rect x="395" y="365" width="10" height="92" rx="5" fill="#34d399" opacity="0.85" />
+    <!-- Graduated Markings on Spray Tank -->
+    <line x1="390" y1="375" x2="393" y2="375" stroke="#6ee7b7" stroke-width="1.5" />
+    <line x1="388" y1="395" x2="393" y2="395" stroke="#6ee7b7" stroke-width="2" />
+    <line x1="390" y1="415" x2="393" y2="415" stroke="#6ee7b7" stroke-width="1.5" />
+    <line x1="388" y1="435" x2="393" y2="435" stroke="#6ee7b7" stroke-width="2" />
+
+    <!-- Spray Delivery Hoses to 4 Nozzles (routed along arms) -->
+    <path d="M375,340 Q300,285 210,210" fill="none" stroke="#059669" stroke-width="2.5" stroke-dasharray="6 3" opacity="0.7" />
+    <path d="M425,340 Q500,285 590,210" fill="none" stroke="#059669" stroke-width="2.5" stroke-dasharray="6 3" opacity="0.7" />
+    <path d="M375,460 Q300,515 210,590" fill="none" stroke="#059669" stroke-width="2.5" stroke-dasharray="6 3" opacity="0.7" />
+    <path d="M425,460 Q500,515 590,590" fill="none" stroke="#059669" stroke-width="2.5" stroke-dasharray="6 3" opacity="0.7" />
+
+    <!-- Centrifugal Atomizer Spray Nozzles under motor pods -->
+    <!-- TL Nozzle -->
+    <circle cx="210" cy="210" r="14" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="210" cy="210" r="6" fill="#34d399" opacity="0.8" />
+    <!-- TR Nozzle -->
+    <circle cx="590" cy="210" r="14" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="590" cy="210" r="6" fill="#34d399" opacity="0.8" />
+    <!-- BL Nozzle -->
+    <circle cx="210" cy="590" r="14" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="210" cy="590" r="6" fill="#34d399" opacity="0.8" />
+    <!-- BR Nozzle -->
+    <circle cx="590" cy="590" r="14" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+    <circle cx="590" cy="590" r="6" fill="#34d399" opacity="0.8" />
+  </g>
+
+  <!-- ================= LAYER 3: 4 CARBON FIBER BOOM ARMS ================= -->
+  <g id="drone-arms">
+    <!-- Top-Left Arm (TL) -->
+    <line x1="400" y1="400" x2="210" y2="210" stroke="url(#arm-grad-tl)" stroke-width="24" stroke-linecap="round" />
+    <line x1="400" y1="400" x2="210" y2="210" stroke="#475569" stroke-width="4" stroke-linecap="round" stroke-dasharray="16 22" />
+    <line x1="400" y1="400" x2="210" y2="210" stroke="#000000" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Top-Right Arm (TR) -->
+    <line x1="400" y1="400" x2="590" y2="210" stroke="url(#arm-grad-tr)" stroke-width="24" stroke-linecap="round" />
+    <line x1="400" y1="400" x2="590" y2="210" stroke="#475569" stroke-width="4" stroke-linecap="round" stroke-dasharray="16 22" />
+    <line x1="400" y1="400" x2="590" y2="210" stroke="#000000" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Bottom-Left Arm (BL) -->
+    <line x1="400" y1="400" x2="210" y2="590" stroke="url(#arm-grad-bl)" stroke-width="24" stroke-linecap="round" />
+    <line x1="400" y1="400" x2="210" y2="590" stroke="#475569" stroke-width="4" stroke-linecap="round" stroke-dasharray="16 22" />
+    <line x1="400" y1="400" x2="210" y2="590" stroke="#000000" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Bottom-Right Arm (BR) -->
+    <line x1="400" y1="400" x2="590" y2="590" stroke="url(#arm-grad-br)" stroke-width="24" stroke-linecap="round" />
+    <line x1="400" y1="400" x2="590" y2="590" stroke="#475569" stroke-width="4" stroke-linecap="round" stroke-dasharray="16 22" />
+    <line x1="400" y1="400" x2="590" y2="590" stroke="#000000" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Arm Root Clamps / Folding Lock Collars near Fuselage -->
+    <!-- TL Joint -->
+    <polygon points="340,326 326,340 338,352 352,338" fill="#1e293b" stroke="#10b981" stroke-width="2" />
+    <circle cx="339" cy="339" r="2.5" fill="#f8fafc" />
+    <!-- TR Joint -->
+    <polygon points="460,326 474,340 462,352 448,338" fill="#1e293b" stroke="#10b981" stroke-width="2" />
+    <circle cx="461" cy="339" r="2.5" fill="#f8fafc" />
+    <!-- BL Joint -->
+    <polygon points="340,474 326,460 338,448 352,462" fill="#1e293b" stroke="#10b981" stroke-width="2" />
+    <circle cx="339" cy="461" r="2.5" fill="#f8fafc" />
+    <!-- BR Joint -->
+    <polygon points="460,474 474,460 462,448 448,462" fill="#1e293b" stroke="#10b981" stroke-width="2" />
+    <circle cx="461" cy="461" r="2.5" fill="#f8fafc" />
+  </g>
+
+  <!-- ================= LAYER 4: MOTOR MOUNTS & STATOR HOUSINGS ================= -->
+  <g id="motors">
+    <!-- Top-Left Motor Pod (210, 210) -->
+    <g transform="translate(210, 210)">
+      <circle cx="0" cy="0" r="38" fill="#0f172a" stroke="#334155" stroke-width="2" />
+      <circle cx="0" cy="0" r="32" fill="url(#motor-bell)" stroke="#10b981" stroke-width="1.5" />
+      <!-- CNC Heat dissipation radial vents -->
+      <line x1="-28" y1="0" x2="-18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="28" y1="0" x2="18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="-28" x2="0" y2="-18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="28" x2="0" y2="18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="-20" x2="-13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="20" x2="13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="20" x2="-13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="-20" x2="13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <!-- Center Shaft Boss & Anodized Nut -->
+      <circle cx="0" cy="0" r="14" fill="#020617" stroke="#34d399" stroke-width="2" />
+      <circle cx="0" cy="0" r="7" fill="url(#motor-cap)" />
+    </g>
+
+    <!-- Top-Right Motor Pod (590, 210) -->
+    <g transform="translate(590, 210)">
+      <circle cx="0" cy="0" r="38" fill="#0f172a" stroke="#334155" stroke-width="2" />
+      <circle cx="0" cy="0" r="32" fill="url(#motor-bell)" stroke="#10b981" stroke-width="1.5" />
+      <!-- CNC Heat dissipation radial vents -->
+      <line x1="-28" y1="0" x2="-18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="28" y1="0" x2="18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="-28" x2="0" y2="-18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="28" x2="0" y2="18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="-20" x2="-13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="20" x2="13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="20" x2="-13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="-20" x2="13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <!-- Center Shaft Boss & Anodized Nut -->
+      <circle cx="0" cy="0" r="14" fill="#020617" stroke="#34d399" stroke-width="2" />
+      <circle cx="0" cy="0" r="7" fill="url(#motor-cap)" />
+    </g>
+
+    <!-- Bottom-Left Motor Pod (210, 590) -->
+    <g transform="translate(210, 590)">
+      <circle cx="0" cy="0" r="38" fill="#0f172a" stroke="#334155" stroke-width="2" />
+      <circle cx="0" cy="0" r="32" fill="url(#motor-bell)" stroke="#10b981" stroke-width="1.5" />
+      <!-- CNC Heat dissipation radial vents -->
+      <line x1="-28" y1="0" x2="-18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="28" y1="0" x2="18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="-28" x2="0" y2="-18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="28" x2="0" y2="18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="-20" x2="-13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="20" x2="13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="20" x2="-13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="-20" x2="13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <!-- Center Shaft Boss & Anodized Nut -->
+      <circle cx="0" cy="0" r="14" fill="#020617" stroke="#34d399" stroke-width="2" />
+      <circle cx="0" cy="0" r="7" fill="url(#motor-cap)" />
+    </g>
+
+    <!-- Bottom-Right Motor Pod (590, 590) -->
+    <g transform="translate(590, 590)">
+      <circle cx="0" cy="0" r="38" fill="#0f172a" stroke="#334155" stroke-width="2" />
+      <circle cx="0" cy="0" r="32" fill="url(#motor-bell)" stroke="#10b981" stroke-width="1.5" />
+      <!-- CNC Heat dissipation radial vents -->
+      <line x1="-28" y1="0" x2="-18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="28" y1="0" x2="18" y2="0" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="-28" x2="0" y2="-18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="0" y1="28" x2="0" y2="18" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="-20" x2="-13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="20" x2="13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="-20" y1="20" x2="-13" y2="13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <line x1="20" y1="-20" x2="13" y2="-13" stroke="#64748b" stroke-width="3" stroke-linecap="round" />
+      <!-- Center Shaft Boss & Anodized Nut -->
+      <circle cx="0" cy="0" r="14" fill="#020617" stroke="#34d399" stroke-width="2" />
+      <circle cx="0" cy="0" r="7" fill="url(#motor-cap)" />
+    </g>
+  </g>
+
+  <!-- ================= LAYER 5: MAIN FUSELAGE / CHASSIS ================= -->
+  <g id="fuselage">
+    <!-- Base Lower Shell (Aerodynamic Octagonal Contours) -->
+    <path d="M350,270 
+             L450,270 
+             L480,310 
+             L490,440 
+             L460,520 
+             L425,540 
+             L375,540 
+             L340,520 
+             L310,440 
+             L320,310 Z" 
+          fill="url(#fuselage-base)" 
+          stroke="#334155" 
+          stroke-width="3" />
+
+    <!-- Exterior Tech Insets / Carbon Paneling -->
+    <path d="M358,282 L442,282 L468,318 L476,432 L450,508 L420,526 L380,526 L350,508 L324,432 L332,318 Z" 
+          fill="#090d16" 
+          stroke="#10b981" 
+          stroke-width="1.5" 
+          stroke-opacity="0.6" />
+
+    <!-- Elevated Upper Cockpit / Avionics Canopy -->
+    <path d="M362,315 
+             L438,315 
+             L456,355 
+             L456,435 
+             L435,485 
+             L365,485 
+             L344,435 
+             L344,355 Z" 
+          fill="url(#canopy-top)" 
+          stroke="#475569" 
+          stroke-width="2.5" />
+
+    <!-- Agricultural High-Visibility Emerald Racing Stripes -->
+    <polygon points="393,290 407,290 407,515 393,515" fill="url(#accent-green)" />
+    <line x1="386" y1="320" x2="386" y2="480" stroke="#34d399" stroke-width="2" stroke-opacity="0.8" />
+    <line x1="414" y1="320" x2="414" y2="480" stroke="#34d399" stroke-width="2" stroke-opacity="0.8" />
+
+    <!-- Intelligent Battery Bay & Power Button Module -->
+    <rect x="372" y="420" width="56" height="52" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="2" />
+    <!-- Battery Level 4-LED Indicator Bar -->
+    <circle cx="382" cy="434" r="3" fill="#10b981" filter="url(#glow-green)" />
+    <circle cx="394" cy="434" r="3" fill="#10b981" filter="url(#glow-green)" />
+    <circle cx="406" cy="434" r="3" fill="#10b981" filter="url(#glow-green)" />
+    <circle cx="418" cy="434" r="3" fill="#10b981" filter="url(#glow-green)" />
+    <!-- Power Switch Ring -->
+    <circle cx="400" cy="454" r="7" fill="#020617" stroke="#34d399" stroke-width="1.5" />
+    <circle cx="400" cy="454" r="3" fill="#10b981" />
+
+    <!-- Cooling Heatsink Air Extractors on Fuselage Sides -->
+    <line x1="332" y1="370" x2="340" y2="370" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="330" y1="385" x2="340" y2="385" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="330" y1="400" x2="340" y2="400" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="332" y1="415" x2="340" y2="415" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+
+    <line x1="460" y1="370" x2="468" y2="370" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="460" y1="385" x2="470" y2="385" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="460" y1="400" x2="470" y2="400" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="460" y1="415" x2="468" y2="415" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" />
+  </g>
+
+  <!-- ================= LAYER 6: SENSORS, RADAR & RTK SATELLITE MODULES ================= -->
+  <g id="sensors-and-rtk">
+    <!-- Central Omnidirectional Phased-Array Obstacle Avoidance Radar -->
+    <circle cx="400" cy="370" r="24" fill="url(#radar-dome)" stroke="#0284c7" stroke-width="2.5" />
+    <circle cx="400" cy="370" r="16" fill="none" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.8" />
+    <circle cx="400" cy="370" r="7" fill="#0369a1" stroke="#bae6fd" stroke-width="1" />
+    <circle cx="400" cy="370" r="2" fill="#ffffff" />
+
+    <!-- Dual Centimeter RTK High-Precision GPS/GNSS Antennas -->
+    <!-- Left RTK Mast -->
+    <circle cx="360" cy="305" r="9" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+    <circle cx="360" cy="305" r="4.5" fill="#34d399" />
+    <!-- Right RTK Mast -->
+    <circle cx="440" cy="305" r="9" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+    <circle cx="440" cy="305" r="4.5" fill="#34d399" />
+
+    <!-- Front Gimbal 4K Multispectral Crop Health Camera & LiDAR -->
+    <path d="M376,270 L424,270 L418,250 L382,250 Z" fill="#020617" stroke="#334155" stroke-width="2" />
+    <!-- Gimbal Tilt Pivot -->
+    <rect x="384" y="244" width="32" height="14" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="1.5" />
+    <!-- Optical Lens Glass (Multicoated) -->
+    <circle cx="400" cy="251" r="5" fill="#0284c7" />
+    <circle cx="400" cy="251" r="2.5" fill="#0f172a" />
+    <circle cx="401.5" cy="249.5" r="1.2" fill="#ffffff" />
+  </g>
+
+  <!-- ================= LAYER 7: PROPELLERS & ROTOR BLADES ================= -->
+  <!-- 
+       AERODYNAMICALLY CORRECT BLADE ORIENTATIONS:
+       Quad-X Configuration Counter-Rotating Blades:
+       - Front-Left (TL): Rotates CLOCKWISE (CW)
+       - Front-Right (TR): Rotates COUNTER-CLOCKWISE (CCW)
+       - Rear-Left (BL): Rotates COUNTER-CLOCKWISE (CCW)
+       - Rear-Right (BR): Rotates CLOCKWISE (CW)
+  -->
+  <g id="propellers">
+    <!-- ================= 1. TOP-LEFT ROTOR (CW) ================= -->
+    <g transform="translate(210, 210)">
+      <!-- Swept Rotation Area Arc / Safety Ring -->
+      <circle cx="0" cy="0" r="142" fill="url(#rotor-disc)" />
+      <circle cx="0" cy="0" r="142" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="14 10" opacity="0.6" />
+      <circle cx="0" cy="0" r="146" fill="none" stroke="#34d399" stroke-width="0.75" stroke-dasharray="40 80" opacity="0.4" />
+
+      <!-- Folding Propeller Assembly (Rotated -35 deg for dynamic balance) -->
+      <g transform="rotate(-35)">
+        <!-- Center Hub Clamp -->
+        <rect x="-18" y="-7" width="36" height="14" rx="5" fill="#090d16" stroke="#475569" stroke-width="1.5" />
+        <circle cx="-10" cy="0" r="2.5" fill="#cbd5e1" />
+        <circle cx="10" cy="0" r="2.5" fill="#cbd5e1" />
+
+        <!-- Blade 1 (Left / Inward) -->
+        <!-- Realistic curved tapered carbon fiber blade with airfoil camber -->
+        <path d="M-12,-4 
+                 C-45,-12 -95,-16 -135,-6 
+                 C-142,-4 -142,2 -136,5 
+                 C-95,14 -45,10 -12,4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <!-- Blade 1 Hi-Vis Safety Tip (Agri Green) -->
+        <path d="M-120,-8 C-135,-6 -142,-4 -136,5 C-125,7 -118,6 -115,4 Z" fill="#34d399" />
+
+        <!-- Blade 2 (Right / Outward) -->
+        <path d="M12,4 
+                 C45,12 95,16 135,6 
+                 C142,4 142,-2 136,-5 
+                 C95,-14 45,-10 12,-4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <!-- Blade 2 Hi-Vis Safety Tip -->
+        <path d="M120,8 C135,6 142,4 136,-5 C125,-7 118,-6 115,-4 Z" fill="#34d399" />
+      </g>
+    </g>
+
+    <!-- ================= 2. TOP-RIGHT ROTOR (CCW) ================= -->
+    <g transform="translate(590, 210)">
+      <!-- Swept Rotation Area Arc / Safety Ring -->
+      <circle cx="0" cy="0" r="142" fill="url(#rotor-disc)" />
+      <circle cx="0" cy="0" r="142" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="14 10" opacity="0.6" />
+      <circle cx="0" cy="0" r="146" fill="none" stroke="#34d399" stroke-width="0.75" stroke-dasharray="40 80" opacity="0.4" />
+
+      <!-- Folding Propeller Assembly (Rotated +35 deg) -->
+      <g transform="rotate(35)">
+        <!-- Center Hub Clamp -->
+        <rect x="-18" y="-7" width="36" height="14" rx="5" fill="#090d16" stroke="#475569" stroke-width="1.5" />
+        <circle cx="-10" cy="0" r="2.5" fill="#cbd5e1" />
+        <circle cx="10" cy="0" r="2.5" fill="#cbd5e1" />
+
+        <!-- Blade 1 -->
+        <path d="M-12,4 
+                 C-45,12 -95,16 -135,6 
+                 C-142,4 -142,-2 -136,-5 
+                 C-95,-14 -45,-10 -12,-4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <path d="M-120,8 C-135,6 -142,4 -136,-5 C-125,-7 -118,-6 -115,-4 Z" fill="#34d399" />
+
+        <!-- Blade 2 -->
+        <path d="M12,-4 
+                 C45,-12 95,-16 135,-6 
+                 C142,-4 142,2 136,5 
+                 C95,14 45,10 12,4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <path d="M120,-8 C135,-6 142,-4 136,5 C125,7 118,6 115,4 Z" fill="#34d399" />
+      </g>
+    </g>
+
+    <!-- ================= 3. BOTTOM-LEFT ROTOR (CCW) ================= -->
+    <g transform="translate(210, 590)">
+      <!-- Swept Rotation Area Arc / Safety Ring -->
+      <circle cx="0" cy="0" r="142" fill="url(#rotor-disc)" />
+      <circle cx="0" cy="0" r="142" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="14 10" opacity="0.6" />
+      <circle cx="0" cy="0" r="146" fill="none" stroke="#34d399" stroke-width="0.75" stroke-dasharray="40 80" opacity="0.4" />
+
+      <!-- Folding Propeller Assembly (Rotated +35 deg) -->
+      <g transform="rotate(35)">
+        <!-- Center Hub Clamp -->
+        <rect x="-18" y="-7" width="36" height="14" rx="5" fill="#090d16" stroke="#475569" stroke-width="1.5" />
+        <circle cx="-10" cy="0" r="2.5" fill="#cbd5e1" />
+        <circle cx="10" cy="0" r="2.5" fill="#cbd5e1" />
+
+        <!-- Blade 1 -->
+        <path d="M-12,4 
+                 C-45,12 -95,16 -135,6 
+                 C-142,4 -142,-2 -136,-5 
+                 C-95,-14 -45,-10 -12,-4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <path d="M-120,8 C-135,6 -142,4 -136,-5 C-125,-7 -118,-6 -115,-4 Z" fill="#34d399" />
+
+        <!-- Blade 2 -->
+        <path d="M12,-4 
+                 C45,-12 95,-16 135,-6 
+                 C142,-4 142,2 136,5 
+                 C95,14 45,10 12,4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <path d="M120,-8 C135,-6 142,-4 136,5 C125,7 118,6 115,4 Z" fill="#34d399" />
+      </g>
+    </g>
+
+    <!-- ================= 4. BOTTOM-RIGHT ROTOR (CW) ================= -->
+    <g transform="translate(590, 590)">
+      <!-- Swept Rotation Area Arc / Safety Ring -->
+      <circle cx="0" cy="0" r="142" fill="url(#rotor-disc)" />
+      <circle cx="0" cy="0" r="142" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="14 10" opacity="0.6" />
+      <circle cx="0" cy="0" r="146" fill="none" stroke="#34d399" stroke-width="0.75" stroke-dasharray="40 80" opacity="0.4" />
+
+      <!-- Folding Propeller Assembly (Rotated -35 deg) -->
+      <g transform="rotate(-35)">
+        <!-- Center Hub Clamp -->
+        <rect x="-18" y="-7" width="36" height="14" rx="5" fill="#090d16" stroke="#475569" stroke-width="1.5" />
+        <circle cx="-10" cy="0" r="2.5" fill="#cbd5e1" />
+        <circle cx="10" cy="0" r="2.5" fill="#cbd5e1" />
+
+        <!-- Blade 1 -->
+        <path d="M-12,-4 
+                 C-45,-12 -95,-16 -135,-6 
+                 C-142,-4 -142,2 -136,5 
+                 C-95,14 -45,10 -12,4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <path d="M-120,-8 C-135,-6 -142,-4 -136,5 C-125,7 -118,6 -115,4 Z" fill="#34d399" />
+
+        <!-- Blade 2 -->
+        <path d="M12,4 
+                 C45,12 95,16 135,6 
+                 C142,4 142,-2 136,-5 
+                 C95,-14 45,-10 12,-4 Z" 
+              fill="url(#prop-blade-h)" 
+              stroke="#047857" 
+              stroke-width="1" />
+        <path d="M120,8 C135,6 142,4 136,-5 C125,-7 118,-6 115,-4 Z" fill="#34d399" />
+      </g>
+    </g>
+  </g>
+
+  <!-- ================= LAYER 8: NAVIGATION & ANTI-COLLISION LIGHTS ================= -->
+  <g id="nav-lights">
+    <!-- Front-Left Port Navigation Strobe (Aviation Red) -->
+    <circle cx="192" cy="192" r="7" fill="#ef4444" filter="url(#glow-red)" />
+    <circle cx="192" cy="192" r="3.5" fill="#ffffff" />
+
+    <!-- Front-Right Starboard Navigation Strobe (Aviation Green) -->
+    <circle cx="608" cy="192" r="7" fill="#22c55e" filter="url(#glow-green)" />
+    <circle cx="608" cy="192" r="3.5" fill="#ffffff" />
+
+    <!-- Rear-Left Status Beacon (Amber) -->
+    <circle cx="192" cy="608" r="6" fill="#f59e0b" />
+    <circle cx="192" cy="608" r="2.5" fill="#ffffff" />
+
+    <!-- Rear-Right Status Beacon (Amber) -->
+    <circle cx="608" cy="608" r="6" fill="#f59e0b" />
+    <circle cx="608" cy="608" r="2.5" fill="#ffffff" />
+
+    <!-- Tail Beacon Flight Status LED (Flashing Cyan / Emerald) -->
+    <circle cx="400" cy="530" r="5" fill="#10b981" filter="url(#glow-green)" />
+    <circle cx="400" cy="530" r="2" fill="#ffffff" />
+  </g>
+</svg>
